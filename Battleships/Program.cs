@@ -23,10 +23,10 @@
 
             //Initial UI state
             ui.map = ui.GenerateMap();
-            ui.DrawMap(ui.map);
+            ui.DrawMap(ui.map, ui.PlayerMapPositionX, ui.PlayerMapPositionY);
 
             ui.shipMap = ui.GenerateShipMap();
-            ui.DrawShipMap(ui.shipMap);
+            ui.DrawShipMap(ui.shipMap, ui.PlayerMapPositionX, ui.PlayerMapPositionY);
 
             ui.shipSelection = ui.GenerateShipSelection(engine.carrierMax, engine.battleshipMax, engine.submarineMax, engine.destroyerMax);
             ui.DrawShipSelection(ui.shipSelection);
@@ -45,7 +45,7 @@
                 Helpers.MoveCursor(engine.XCursor, engine.YCursor, "  ");
 
                 //Draw Ships
-                ui.DrawShipMap(ui.shipMap);
+                ui.DrawShipMap(ui.shipMap, ui.PlayerMapPositionX, ui.PlayerMapPositionY);
 
                 //Draw Ship Selection UI
                 ui.DrawShipSelection(ui.shipSelection);
@@ -137,7 +137,7 @@
                                     ui.shipSelection = ui.GenerateShipSelection(engine.carrierMax, engine.battleshipMax, engine.submarineMax, engine.destroyerMax);
                                     ui.DrawShipSelection(ui.shipSelection);
                                 }
-                                ui.DrawShipMap(ui.shipMap);
+                                ui.DrawShipMap(ui.shipMap, ui.PlayerMapPositionX, ui.PlayerMapPositionY);
                                 engine.shipFrontPlaced = false;
                                 engine.shipPlacementSelected = false;
                             }
@@ -261,11 +261,22 @@
 
             } while (!engine.GetAllShipsPlaced(ai.AiCarrierMax, ai.AiBattleshipMax, ai.AiSubmarineMax, ai.AiDestroyerMax));
 
-            ui.DrawShipMap(ui.aiShipMap);
-
             //
             //Main game ui initialization
-            //            
+            //
+
+            Console.Clear();
+            ui.DrawMap(ui.map, ui.PlayerMapPositionX, ui.PlayerMapPositionY);
+            ui.DrawMap(ui.map, ui.AiMapPositionX, ui.AiMapPositionY);
+            ui.DrawShipMap(ui.shipMap, ui.PlayerMapPositionX, ui.PlayerMapPositionY);
+            ui.DrawShipMap(ui.aiShipMap, ui.AiMapPositionX, ui.AiMapPositionY);
+
+            engine.XCursor = ui.AiMapPositionX + 2;
+            engine.YCursor = ui.AiMapPositionY + 2;
+            Console.SetCursorPosition(ui.AiMapPositionX + 2, ui.AiMapPositionY + 2);
+            Helpers.MoveCursor(engine.XCursor, engine.YCursor, ui.cursor);
+
+            Console.ReadKey();
 
             //
             //Main game phase
@@ -463,6 +474,11 @@
         public string[,] shipMap;
         public string[,] aiShipMap;
         public string[,] shipSelection;
+        public int PlayerMapPositionY = 0;
+        public int PlayerMapPositionX = 0;
+        public int AiMapPositionY = 0;
+        public int AiMapPositionX = 15;
+
         public void DrawShipPlacementFeedback(bool shipPlacementSelected, bool shipFrontPlaced)
         {
             if (shipPlacementSelected && !shipFrontPlaced)
@@ -513,26 +529,26 @@
             }
             return map;
         }
-        public void DrawShipMap(string[,] map)
+        public void DrawShipMap(string[,] map, int positionX, int positionY)
         {
             //Console.BackgroundColor = ConsoleColor.Cyan;
             for (int x = 0; x < mapWidth - 2; x++)
             {
                 for (int y = 0; y < mapHeight - 2; y++)
                 {
-                    Helpers.Write(x + 1, y + 1, map[x, y]);
+                    Helpers.Write(x + 1 + positionX, y + 1 + positionY, map[x, y]);
                 }
             }
             //Console.BackgroundColor = ConsoleColor.Black;
         }
-        public void DrawMap(char[,] map)
+        public void DrawMap(char[,] map, int positionX, int positionY)
         {
             Console.ForegroundColor = ConsoleColor.White;
             for (int x = 0; x < mapWidth; x++)
             {
                 for (int y = 0; y < mapHeight; y++)
                 {
-                    Helpers.Write(x, y, map[x, y]);
+                    Helpers.Write(x + positionX, y + positionY, map[x, y]);
                 }
             }
             Console.ForegroundColor = ConsoleColor.Gray;
