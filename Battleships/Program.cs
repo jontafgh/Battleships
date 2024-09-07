@@ -5,6 +5,10 @@
     {
         static void Main(string[] args)
         {
+            //
+            //Start
+            //
+
             Engine engine = new Engine();
             GameUI ui = new GameUI();
 
@@ -24,17 +28,19 @@
 
             ui.shipSelection = ui.GenerateShipSelection(engine.carrierMax, engine.battleshipMax, engine.submarineMax, engine.destroyerMax);
             ui.DrawShipSelection(ui.shipSelection);
-
-            //Initial cursor
+            
             Console.SetCursorPosition(engine.XCursor, engine.YCursor);
             Helpers.MoveCursor(engine.XCursor, engine.YCursor, ui.cursor);
 
+            //
+            //Ship placement phase
+            //
             do
             {
                 consoleKey = Console.ReadKey(true);
 
                 //Clear old cursor                
-                Helpers.MoveCursor(engine.XCursor, engine.YCursor, "  ");                
+                Helpers.MoveCursor(engine.XCursor, engine.YCursor, "  ");
 
                 //Draw Ships
                 ui.DrawShipMap(ui.shipMap);
@@ -70,28 +76,28 @@
                         {
                             engine.selectedShipLength = engine.carrierLength;
                             engine.shipPlacementSelected = true;
-                        }                        
+                        }
                         break;
                     case ConsoleKey.D2:
                         if (engine.battleshipMax > 0)
                         {
                             engine.selectedShipLength = engine.battleshipLength;
                             engine.shipPlacementSelected = true;
-                        }                        
+                        }
                         break;
                     case ConsoleKey.D3:
                         if (engine.submarineMax > 0)
                         {
                             engine.selectedShipLength = engine.submarineLength;
                             engine.shipPlacementSelected = true;
-                        }                        
+                        }
                         break;
                     case ConsoleKey.D4:
                         if (engine.destroyerMax > 0)
                         {
                             engine.selectedShipLength = engine.destroyerLength;
                             engine.shipPlacementSelected = true;
-                        }                        
+                        }
                         break;
                     case ConsoleKey.Spacebar:
 
@@ -148,11 +154,24 @@
                 }
 
                 //Move Cursor                
-                Helpers.MoveCursor(engine.XCursor, engine.YCursor, ui.cursor);                
+                Helpers.MoveCursor(engine.XCursor, engine.YCursor, ui.cursor);
 
-            } while (true);
+            } while (!engine.GetAllShipsPlaced(engine.carrierMax, engine.battleshipMax, engine.submarineMax, engine.destroyerMax));
+
+            //
+            //AI Generates map
+            //
+
+            //
+            //Main game ui initialization
+            //            
+
+            //
+            //Main game phase
+            //
+
         }
-        
+
     }
 
     public class Engine
@@ -163,6 +182,7 @@
         public int YCursorStored = 5;
         public bool shipFrontPlaced = false;
         public bool shipPlacementSelected = false;
+        public bool allShipsPlaced = false;
         public int XPositionShipFront = 0;
         public int YPositionShipFront = 0;
         public int XPositionShipBack = 0;
@@ -175,7 +195,7 @@
         public int battleshipLength = 4;
         public int submarineLength = 3;
         public int destroyerLength = 2;
-        public int selectedShipLength = 0;        
+        public int selectedShipLength = 0;
         public bool GetValidShipPlacement(string[,] shipMap, int XPositionShipFront, int YPositionShipFront, int XPositionShipBack, int YPositionShipBack, int shipSize, string sea)
         {
             if (YPositionShipFront < YPositionShipBack)
@@ -219,6 +239,17 @@
                 }
             }
             return true;
+        }
+        public bool GetAllShipsPlaced(int carrierMax, int battleshipMax, int submarineMax, int destroyerMax)
+        {
+            if (carrierMax == 0 && battleshipMax == 0 && submarineMax == 0 && destroyerMax == 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
     public class GameUI
