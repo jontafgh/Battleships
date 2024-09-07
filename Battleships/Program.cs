@@ -5,209 +5,252 @@
     {
         static void Main(string[] args)
         {
+            Engine engine = new Engine();
+            GameUI ui = new GameUI();
+
             ConsoleKeyInfo consoleKey;
-            //Console.CursorSize = 100;
             Console.SetWindowSize(120, 40);
             Console.SetBufferSize(120, 40);
-            int XPositionCursor = 5;
-            int YPositionCursor = 5;
-            int XPositionCursorStored = 5;
-            int YPositionCursorStored = 5;
-            //int XLastCollision = -1;
-            //int YLastCollision = -1;
-            string character = "  ";
-            char wall = '█';
-            //string ship = "▓▓";
-            string sea = "  ";
-            string carrier = "██";
-            string battleship = "▓▓";
-            string submarine = "░░";
-            string destroyer = "▒▒";
-            int mapWidth = 12;
-            int mapHeight = 12;
-            bool nosePlaced = false;
-            int XPositionNose = 0;
-            int YPositionNose = 0;
-            int XPositionTail = 0;
-            int YPositionTail = 0;
-            bool shipPlacementSelected = false;
-            int carrierMax = 1;
-            int battleshipMax = 2;
-            int submarineMax = 3;
-            int destroyerMax = 4;
-            int carrierLength = 5;
-            int battleshipLength = 4;
-            int submarineLength = 3;
-            int destroyerLength = 2;
-            int selectedShipLength = 0;
+
             Console.Clear();
             Console.CursorVisible = false;
 
-            char[,] map = GenerateMap(mapWidth, mapHeight, wall);
-            DrawMap(map, mapWidth, mapHeight);
+            //Initial UI state
+            ui.map = ui.GenerateMap();
+            ui.DrawMap(ui.map);
 
-            string[,] shipMap = GenerateShipMap(mapWidth, mapHeight, XPositionNose, YPositionNose, XPositionTail, YPositionTail, sea);
-            DrawShipMap(shipMap, mapWidth, mapHeight);
+            ui.shipMap = ui.GenerateShipMap();
+            ui.DrawShipMap(ui.shipMap);
 
-            string[,] shipSelection = GenerateShipSelection(carrierMax, battleshipMax, submarineMax, destroyerMax, carrier, battleship, submarine, destroyer);
-            DrawShipSelection(shipSelection);
+            ui.shipSelection = ui.GenerateShipSelection(engine.carrierMax, engine.battleshipMax, engine.submarineMax, engine.destroyerMax);
+            ui.DrawShipSelection(ui.shipSelection);
 
             //Initial cursor
-            Console.BackgroundColor = ConsoleColor.White;
-            Console.SetCursorPosition(XPositionCursor, YPositionCursor);
-            Write(XPositionCursor, YPositionCursor, character);
-            Console.BackgroundColor = ConsoleColor.Black;
+            Console.SetCursorPosition(engine.XCursor, engine.YCursor);
+            Helpers.MoveCursor(engine.XCursor, engine.YCursor, ui.cursor);
 
             do
             {
                 consoleKey = Console.ReadKey(true);
-                //Clear old cursor
-                Console.BackgroundColor = ConsoleColor.White;
-                Write(XPositionCursor, YPositionCursor, "  ");
-                Console.BackgroundColor = ConsoleColor.Black;
+
+                //Clear old cursor                
+                Helpers.MoveCursor(engine.XCursor, engine.YCursor, "  ");                
 
                 //Draw Ships
-                DrawShipMap(shipMap, mapWidth, mapHeight);
+                ui.DrawShipMap(ui.shipMap);
 
-                //Draw Ship Selection
-                DrawShipSelection(shipSelection);
+                //Draw Ship Selection UI
+                ui.DrawShipSelection(ui.shipSelection);
 
-                // Save cursor position in case of wall
-                XPositionCursorStored = XPositionCursor;
-                YPositionCursorStored = YPositionCursor;
+                //Save cursor position in case of edge of map
+                engine.XCursorStored = engine.XCursor;
+                engine.YCursorStored = engine.YCursor;
 
                 //Read key press
-
                 switch (consoleKey.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        YPositionCursor--;
-                        Console.SetCursorPosition(XPositionCursor, YPositionCursor);
+                        engine.YCursor--;
+                        Console.SetCursorPosition(engine.XCursor, engine.YCursor);
                         break;
                     case ConsoleKey.DownArrow:
-                        YPositionCursor++;
-                        Console.SetCursorPosition(XPositionCursor, YPositionCursor);
+                        engine.YCursor++;
+                        Console.SetCursorPosition(engine.XCursor, engine.YCursor);
                         break;
                     case ConsoleKey.LeftArrow:
-                        XPositionCursor--;
-                        Console.SetCursorPosition(XPositionCursor, YPositionCursor);
+                        engine.XCursor--;
+                        Console.SetCursorPosition(engine.XCursor, engine.YCursor);
                         break;
                     case ConsoleKey.RightArrow:
-                        XPositionCursor++;
-                        Console.SetCursorPosition(XPositionCursor, YPositionCursor);
+                        engine.XCursor++;
+                        Console.SetCursorPosition(engine.XCursor, engine.YCursor);
                         break;
                     case ConsoleKey.D1:
-                        if (carrierMax > 0)
+                        if (engine.carrierMax > 0)
                         {
-                            selectedShipLength = carrierLength;
-                            shipPlacementSelected = true;
+                            engine.selectedShipLength = engine.carrierLength;
+                            engine.shipPlacementSelected = true;
                         }                        
                         break;
                     case ConsoleKey.D2:
-                        if (battleshipMax > 0)
+                        if (engine.battleshipMax > 0)
                         {
-                            selectedShipLength = battleshipLength;
-                            shipPlacementSelected = true;
+                            engine.selectedShipLength = engine.battleshipLength;
+                            engine.shipPlacementSelected = true;
                         }                        
                         break;
                     case ConsoleKey.D3:
-                        if (submarineMax > 0)
+                        if (engine.submarineMax > 0)
                         {
-                            selectedShipLength = submarineLength;
-                            shipPlacementSelected = true;
+                            engine.selectedShipLength = engine.submarineLength;
+                            engine.shipPlacementSelected = true;
                         }                        
                         break;
                     case ConsoleKey.D4:
-                        if (destroyerMax > 0)
+                        if (engine.destroyerMax > 0)
                         {
-                            selectedShipLength = destroyerLength;
-                            shipPlacementSelected = true;
+                            engine.selectedShipLength = engine.destroyerLength;
+                            engine.shipPlacementSelected = true;
                         }                        
                         break;
                     case ConsoleKey.Spacebar:
+
                         //Placement of ships
-                        if (shipPlacementSelected)
+                        if (engine.shipPlacementSelected)
                         {
-                            if (!nosePlaced)
+                            if (!engine.shipFrontPlaced)
                             {
-                                XPositionNose = XPositionCursor;
-                                YPositionNose = YPositionCursor;
-                                nosePlaced = true;
+                                engine.XPositionShipFront = engine.XCursor;
+                                engine.YPositionShipFront = engine.YCursor;
+                                engine.shipFrontPlaced = true;
                             }
                             else
                             {
-                                XPositionTail = XPositionCursor;
-                                YPositionTail = YPositionCursor;
-                                if (GetValidShipPlacement(shipMap, XPositionNose, YPositionNose, XPositionTail, YPositionTail, selectedShipLength, sea))
+                                engine.XPositionShipBack = engine.XCursor;
+                                engine.YPositionShipBack = engine.YCursor;
+                                if (engine.GetValidShipPlacement(ui.shipMap, engine.XPositionShipFront, engine.YPositionShipFront, engine.XPositionShipBack, engine.YPositionShipBack, engine.selectedShipLength, ui.sea))
                                 {
-                                    shipMap = PlaceShip(shipMap, XPositionNose, YPositionNose, XPositionTail, YPositionTail, selectedShipLength, carrier, battleship, submarine, destroyer);
-                                    switch (selectedShipLength)
+                                    ui.shipMap = ui.PlaceShip(ui.shipMap, engine.XPositionShipFront, engine.YPositionShipFront, engine.XPositionShipBack, engine.YPositionShipBack, engine.selectedShipLength);
+                                    switch (engine.selectedShipLength)
                                     {
                                         case 2:
-                                            destroyerMax--;
+                                            engine.destroyerMax--;
                                             break;
                                         case 3:
-                                            submarineMax--;
+                                            engine.submarineMax--;
                                             break;
                                         case 4:
-                                            battleshipMax--;
+                                            engine.battleshipMax--;
                                             break;
                                         case 5:
-                                            carrierMax--;
+                                            engine.carrierMax--;
                                             break;
                                     }
-                                    shipSelection = GenerateShipSelection(carrierMax, battleshipMax, submarineMax, destroyerMax, carrier, battleship, submarine, destroyer);
-                                    DrawShipSelection(shipSelection);
+                                    ui.shipSelection = ui.GenerateShipSelection(engine.carrierMax, engine.battleshipMax, engine.submarineMax, engine.destroyerMax);
+                                    ui.DrawShipSelection(ui.shipSelection);
                                 }
-                                DrawShipMap(shipMap, mapWidth, mapHeight);
-                                nosePlaced = false;
-                                shipPlacementSelected = false;
+                                ui.DrawShipMap(ui.shipMap);
+                                engine.shipFrontPlaced = false;
+                                engine.shipPlacementSelected = false;
                             }
                         }
                         break;
                 }
 
-                //Placement of ships
-                if (shipPlacementSelected && !nosePlaced)
+                //Placement of ships feedback                
+                ui.DrawShipPlacementFeedback(engine.shipPlacementSelected, engine.shipFrontPlaced);
+
+                //Edge detection                
+                if (ui.map[engine.XCursor, engine.YCursor] == ui.wall)
                 {
-                    Write(0, 25, "Ok place NOSE by pressing Spacebar");
-                }
-                else if (shipPlacementSelected)
-                {
-                    Write(0, 25, "Ok place TAIL by pressing Spacebar");
-                }
-                else
-                {
-                    Write(0, 25, "                                  ");
-                }
-                //Edge detection
-                if (map[XPositionCursor, YPositionCursor] == wall)
-                {
-                    XPositionCursor = XPositionCursorStored;
-                    YPositionCursor = YPositionCursorStored;
+                    engine.XCursor = engine.XCursorStored;
+                    engine.YCursor = engine.YCursorStored;
                 }
 
-                //Move Cursor
-                Console.BackgroundColor = ConsoleColor.White;
-                Write(XPositionCursor, YPositionCursor, character);
-                Console.BackgroundColor = ConsoleColor.Black;
+                //Move Cursor                
+                Helpers.MoveCursor(engine.XCursor, engine.YCursor, ui.cursor);                
 
             } while (true);
         }
-        static void Write(int x, int y, string charachter)
-        {
-            Console.SetCursorPosition(2 * x + 1, y + 1);
-            Console.Write(charachter);
+        
+    }
 
-        }
-        static void Write(int x, int y, char wall)
+    public class Engine
+    {
+        public int XCursor = 5;
+        public int YCursor = 5;
+        public int XCursorStored = 5;
+        public int YCursorStored = 5;
+        public bool shipFrontPlaced = false;
+        public bool shipPlacementSelected = false;
+        public int XPositionShipFront = 0;
+        public int YPositionShipFront = 0;
+        public int XPositionShipBack = 0;
+        public int YPositionShipBack = 0;
+        public int carrierMax = 1;
+        public int battleshipMax = 2;
+        public int submarineMax = 3;
+        public int destroyerMax = 4;
+        public int carrierLength = 5;
+        public int battleshipLength = 4;
+        public int submarineLength = 3;
+        public int destroyerLength = 2;
+        public int selectedShipLength = 0;        
+        public bool GetValidShipPlacement(string[,] shipMap, int XPositionShipFront, int YPositionShipFront, int XPositionShipBack, int YPositionShipBack, int shipSize, string sea)
         {
-            Console.SetCursorPosition(2 * x + 1, y + 1);
-            Console.Write(wall);
-            Console.Write(wall);
-
+            if (YPositionShipFront < YPositionShipBack)
+            {
+                for (int i = YPositionShipFront; i < (YPositionShipFront + shipSize); i++)
+                {
+                    if (shipMap[XPositionShipFront - 1, i - 1] != sea)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else if (YPositionShipFront > YPositionShipBack)
+            {
+                for (int i = YPositionShipFront; i > (YPositionShipFront - shipSize); i--)
+                {
+                    if (shipMap[XPositionShipFront - 1, i - 1] != sea)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else if (XPositionShipFront < XPositionShipBack)
+            {
+                for (int i = XPositionShipFront; i < (XPositionShipFront + (shipSize)); i++)
+                {
+                    if (shipMap[i - 1, YPositionShipFront - 1] != sea)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = XPositionShipFront; i > (XPositionShipFront - (shipSize)); i--)
+                {
+                    if (shipMap[i - 1, YPositionShipFront - 1] != sea)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
-        static string[,] GenerateShipMap(int mapWidth, int mapHeight, int XPositionNose, int YPositionNose, int XPositionTail, int YPositionTail, string sea)
+    }
+    public class GameUI
+    {
+        public string cursor = "  ";
+        public char wall = '█';
+        public string sea = "  ";
+        public string carrier = "██";
+        public string battleship = "▓▓";
+        public string submarine = "░░";
+        public string destroyer = "▒▒";
+        public int mapWidth = 12;
+        public int mapHeight = 12;
+        public char[,] map;
+        public string[,] shipMap;
+        public string[,] shipSelection;
+        public void DrawShipPlacementFeedback(bool shipPlacementSelected, bool shipFrontPlaced)
+        {
+            if (shipPlacementSelected && !shipFrontPlaced)
+            {
+                Helpers.Write(0, 25, "Place the front by pressing Spacebar");
+            }
+            else if (shipPlacementSelected)
+            {
+                Helpers.Write(0, 25, "Place the back by pressing Spacebar ");
+            }
+            else
+            {
+                Helpers.Write(0, 25, "                                    ");
+            }
+        }
+        public string[,] GenerateShipMap()
         {
             string[,] map = new string[mapWidth - 2, mapHeight - 2];
 
@@ -220,7 +263,7 @@
             }
             return map;
         }
-        static char[,] GenerateMap(int mapWidth, int mapHeight, char wall)
+        public char[,] GenerateMap()
         {
             char[,] map = new char[mapWidth, mapHeight];
 
@@ -240,121 +283,114 @@
             {
                 map[mapWidth - 1, i] = wall;
             }
-
-            ////Inside Wall
-            //for (int i = 8; i < mapHeight - 5; i++)
-            //{
-            //    map[12, i] = wall;
-            //}
-
             return map;
         }
-        static void DrawShipMap(string[,] map, int mapWidth, int mapHeight)
+        public void DrawShipMap(string[,] map)
         {
             //Console.BackgroundColor = ConsoleColor.Cyan;
             for (int x = 0; x < mapWidth - 2; x++)
             {
                 for (int y = 0; y < mapHeight - 2; y++)
                 {
-                    Write(x + 1, y + 1, map[x, y]);
+                    Helpers.Write(x + 1, y + 1, map[x, y]);
                 }
             }
             //Console.BackgroundColor = ConsoleColor.Black;
         }
-        static void DrawMap(char[,] map, int mapWidth, int mapHeight)
+        public void DrawMap(char[,] map)
         {
             Console.ForegroundColor = ConsoleColor.White;
             for (int x = 0; x < mapWidth; x++)
             {
                 for (int y = 0; y < mapHeight; y++)
                 {
-                    Write(x, y, map[x, y]);
+                    Helpers.Write(x, y, map[x, y]);
                 }
             }
             Console.ForegroundColor = ConsoleColor.Gray;
         }
-        static string[,] PlaceShip(string[,] shipMap, int XPositionNose, int YPositionNose, int XPositionTail, int YPositionTail, int shipSize, string carrier, string battleship, string submarine, string destroyer)
+        public string[,] PlaceShip(string[,] shipMap, int XPositionShipFront, int YPositionShipFront, int XPositionShipBack, int YPositionShipBack, int shipSize)
         {
-            if (YPositionNose < YPositionTail)
+            if (YPositionShipFront < YPositionShipBack)
             {
-                for (int i = YPositionNose; i < (YPositionNose + shipSize); i++)
+                for (int i = YPositionShipFront; i < (YPositionShipFront + shipSize); i++)
                 {
                     switch (shipSize)
                     {
                         case 2:
-                            shipMap[XPositionNose - 1, i - 1] = destroyer;
+                            shipMap[XPositionShipFront - 1, i - 1] = destroyer;
                             break;
                         case 3:
-                            shipMap[XPositionNose - 1, i - 1] = submarine;
+                            shipMap[XPositionShipFront - 1, i - 1] = submarine;
                             break;
                         case 4:
-                            shipMap[XPositionNose - 1, i - 1] = battleship;
+                            shipMap[XPositionShipFront - 1, i - 1] = battleship;
                             break;
                         case 5:
-                            shipMap[XPositionNose - 1, i - 1] = carrier;
-                            break;
-                    }                    
-                }
-            }
-            else if (YPositionNose > YPositionTail)
-            {
-                for (int i = YPositionNose; i > (YPositionNose - shipSize); i--)
-                {
-                    switch (shipSize)
-                    {
-                        case 2:
-                            shipMap[XPositionNose - 1, i - 1] = destroyer;
-                            break;
-                        case 3:
-                            shipMap[XPositionNose - 1, i - 1] = submarine;
-                            break;
-                        case 4:
-                            shipMap[XPositionNose - 1, i - 1] = battleship;
-                            break;
-                        case 5:
-                            shipMap[XPositionNose - 1, i - 1] = carrier;
+                            shipMap[XPositionShipFront - 1, i - 1] = carrier;
                             break;
                     }
                 }
             }
-            else if (XPositionNose < XPositionTail)
+            else if (YPositionShipFront > YPositionShipBack)
             {
-                for (int i = XPositionNose; i < (XPositionNose + (shipSize)); i++)
+                for (int i = YPositionShipFront; i > (YPositionShipFront - shipSize); i--)
                 {
                     switch (shipSize)
                     {
                         case 2:
-                            shipMap[i - 1, YPositionNose - 1] = destroyer;
+                            shipMap[XPositionShipFront - 1, i - 1] = destroyer;
                             break;
                         case 3:
-                            shipMap[i - 1, YPositionNose - 1] = submarine;
+                            shipMap[XPositionShipFront - 1, i - 1] = submarine;
                             break;
                         case 4:
-                            shipMap[i - 1, YPositionNose - 1] = battleship;
+                            shipMap[XPositionShipFront - 1, i - 1] = battleship;
                             break;
                         case 5:
-                            shipMap[i - 1, YPositionNose - 1] = carrier;
+                            shipMap[XPositionShipFront - 1, i - 1] = carrier;
+                            break;
+                    }
+                }
+            }
+            else if (XPositionShipFront < XPositionShipBack)
+            {
+                for (int i = XPositionShipFront; i < (XPositionShipFront + (shipSize)); i++)
+                {
+                    switch (shipSize)
+                    {
+                        case 2:
+                            shipMap[i - 1, YPositionShipFront - 1] = destroyer;
+                            break;
+                        case 3:
+                            shipMap[i - 1, YPositionShipFront - 1] = submarine;
+                            break;
+                        case 4:
+                            shipMap[i - 1, YPositionShipFront - 1] = battleship;
+                            break;
+                        case 5:
+                            shipMap[i - 1, YPositionShipFront - 1] = carrier;
                             break;
                     }
                 }
             }
             else
             {
-                for (int i = XPositionNose; i > (XPositionNose - (shipSize)); i--)
+                for (int i = XPositionShipFront; i > (XPositionShipFront - (shipSize)); i--)
                 {
                     switch (shipSize)
                     {
                         case 2:
-                            shipMap[i - 1, YPositionNose - 1] = destroyer;
+                            shipMap[i - 1, YPositionShipFront - 1] = destroyer;
                             break;
                         case 3:
-                            shipMap[i - 1, YPositionNose - 1] = submarine;
+                            shipMap[i - 1, YPositionShipFront - 1] = submarine;
                             break;
                         case 4:
-                            shipMap[i - 1, YPositionNose - 1] = battleship;
+                            shipMap[i - 1, YPositionShipFront - 1] = battleship;
                             break;
                         case 5:
-                            shipMap[i - 1, YPositionNose - 1] = carrier;
+                            shipMap[i - 1, YPositionShipFront - 1] = carrier;
                             break;
                     }
                 }
@@ -362,51 +398,7 @@
             return shipMap;
 
         }
-        static bool GetValidShipPlacement(string[,] shipMap, int XPositionNose, int YPositionNose, int XPositionTail, int YPositionTail, int shipSize, string sea)
-        {
-            if (YPositionNose < YPositionTail)
-            {
-                for (int i = YPositionNose; i < (YPositionNose + shipSize); i++)
-                {
-                    if (shipMap[XPositionNose - 1, i - 1] != sea)
-                    {
-                        return false;
-                    }
-                }
-            }
-            else if (YPositionNose > YPositionTail)
-            {
-                for (int i = YPositionNose; i > (YPositionNose - shipSize); i--)
-                {
-                    if (shipMap[XPositionNose - 1, i - 1] != sea)
-                    {
-                        return false;
-                    }
-                }
-            }
-            else if (XPositionNose < XPositionTail)
-            {
-                for (int i = XPositionNose; i < (XPositionNose + (shipSize)); i++)
-                {
-                    if (shipMap[i - 1, YPositionNose - 1] != sea)
-                    {
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                for (int i = XPositionNose; i > (XPositionNose - (shipSize)); i--)
-                {
-                    if (shipMap[i - 1, YPositionNose - 1] != sea)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        static string[,] GenerateShipSelection(int carrierMax, int battleshipMax, int submarineMax, int destroyerMax, string carrier, string battleship, string submarine, string destroyer)
+        public string[,] GenerateShipSelection(int carrierMax, int battleshipMax, int submarineMax, int destroyerMax)
         {
             int shipSelectionWidth = 25;
             int shipSelectionHeight = 6;
@@ -476,18 +468,41 @@
             return shipSelection;
 
         }
-        static void DrawShipSelection(string[,] shipSelecion)
+        public void DrawShipSelection(string[,] shipSelecion)
         {
             for (int x = 0; x < 25; x++)
             {
                 for (int y = 0; y < 6; y++)
                 {
-                    Write(x, y + 15, shipSelecion[x, y]);
+                    Helpers.Write(x, y + 15, shipSelecion[x, y]);
                 }
             }
 
-            Write(0, 21, "[1]Carrier    [2]Battleship [3]Submarine  [4]Destroyer");
-            Write(0, 23, "Place your ships, select by using numbers in brackets []");
+            Helpers.Write(0, 21, "[1]Carrier    [2]Battleship [3]Submarine  [4]Destroyer");
+            Helpers.Write(0, 23, "Place your ships, select by using numbers in brackets []");
+        }
+
+    }
+    public static class Helpers
+    {
+        public static void Write(int x, int y, string charachter)
+        {
+            Console.SetCursorPosition(2 * x + 1, y + 1);
+            Console.Write(charachter);
+
+        }
+        public static void Write(int x, int y, char wall)
+        {
+            Console.SetCursorPosition(2 * x + 1, y + 1);
+            Console.Write(wall);
+            Console.Write(wall);
+
+        }
+        public static void MoveCursor(int XCursor, int YCursor, string cursor)
+        {
+            Console.BackgroundColor = ConsoleColor.White;
+            Helpers.Write(XCursor, YCursor, cursor);
+            Console.BackgroundColor = ConsoleColor.Black;
         }
     }
 }
