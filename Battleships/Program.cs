@@ -11,6 +11,7 @@
 
             Engine engine = new Engine();
             GameUI ui = new GameUI();
+            GameAI ai = new GameAI();
 
             ConsoleKeyInfo consoleKey;
             Console.SetWindowSize(120, 40);
@@ -28,9 +29,12 @@
 
             ui.shipSelection = ui.GenerateShipSelection(engine.carrierMax, engine.battleshipMax, engine.submarineMax, engine.destroyerMax);
             ui.DrawShipSelection(ui.shipSelection);
-            
+
             Console.SetCursorPosition(engine.XCursor, engine.YCursor);
             Helpers.MoveCursor(engine.XCursor, engine.YCursor, ui.cursor);
+
+            
+                      
 
             //
             //Ship placement phase
@@ -162,6 +166,105 @@
             //AI Generates map
             //
 
+            ui.aiShipMap = ui.GenerateShipMap();
+            do
+            {
+                do
+                {
+                    do
+                    {
+                        engine.selectedShipLength = ai.GetShipSelection();
+
+                        switch (engine.selectedShipLength)
+                        {
+                            case 2:
+                                if (ai.AiDestroyerMax == 0)
+                                {
+                                    ai.ValidShipSelection = false;
+                                }
+                                else
+                                {
+                                    ai.ValidShipSelection = true;
+                                }
+                                break;
+                            case 3:
+                                if (ai.AiSubmarineMax == 0)
+                                {
+                                    ai.ValidShipSelection = false;
+                                }
+                                else
+                                {
+                                    ai.ValidShipSelection = true;
+                                }
+                                break;
+                            case 4:
+                                if (ai.AiBattleshipMax == 0)
+                                {
+                                    ai.ValidShipSelection = false;
+                                }
+                                else
+                                {
+                                    ai.ValidShipSelection = true;
+                                }
+                                break;
+                            case 5:
+                                if (ai.AiCarrierMax == 0)
+                                {
+                                    ai.ValidShipSelection = false;
+                                }
+                                else
+                                {
+                                    ai.ValidShipSelection = true;
+                                }
+                                break;
+                        }
+                    } while (!ai.ValidShipSelection);
+
+
+                    engine.XPositionShipFront = ai.GetShipFrontPlacement();
+                    engine.YPositionShipFront = ai.GetShipFrontPlacement();
+
+                    ai.ShipDirection = ai.GetShipDirection();
+
+                    engine.XPositionShipBack = ai.GetShipBackPlacementX(ai.ShipDirection, engine.selectedShipLength, engine.XPositionShipFront, engine.YPositionShipFront);
+                    engine.YPositionShipBack = ai.GetShipBackPlacementY(ai.ShipDirection, engine.selectedShipLength, engine.XPositionShipFront, engine.YPositionShipFront);
+
+                } while (!engine.GetValidShipPlacement(ui.aiShipMap, engine.XPositionShipFront + 1, engine.YPositionShipFront + 1, engine.XPositionShipBack + 1, engine.YPositionShipBack + 1, engine.selectedShipLength, ui.sea));
+
+                ui.aiShipMap = ui.PlaceShip(ui.aiShipMap, engine.XPositionShipFront + 1, engine.YPositionShipFront + 1, engine.XPositionShipBack + 1, engine.YPositionShipBack + 1, engine.selectedShipLength);
+
+                switch (engine.selectedShipLength)
+                {
+                    case 2:
+                        if (ai.AiDestroyerMax > 0)
+                        {
+                            ai.AiDestroyerMax--;
+                        }
+                        break;
+                    case 3:
+                        if (ai.AiSubmarineMax > 0)
+                        {
+                            ai.AiSubmarineMax--;
+                        }
+                        break;
+                    case 4:
+                        if (ai.AiBattleshipMax > 0)
+                        {
+                            ai.AiBattleshipMax--;
+                        }
+                        break;
+                    case 5:
+                        if (ai.AiCarrierMax > 0)
+                        {
+                            ai.AiCarrierMax--;
+                        }
+                        break;
+                }
+
+            } while (!engine.GetAllShipsPlaced(ai.AiCarrierMax, ai.AiBattleshipMax, ai.AiSubmarineMax, ai.AiDestroyerMax));
+
+            ui.DrawShipMap(ui.aiShipMap);
+
             //
             //Main game ui initialization
             //            
@@ -198,6 +301,22 @@
         public int selectedShipLength = 0;
         public bool GetValidShipPlacement(string[,] shipMap, int XPositionShipFront, int YPositionShipFront, int XPositionShipBack, int YPositionShipBack, int shipSize, string sea)
         {
+            if (YPositionShipFront > YPositionShipBack && YPositionShipBack - shipSize < 1)
+            {
+                return false;
+            }
+            if (YPositionShipFront < YPositionShipBack && YPositionShipBack + shipSize > 10)
+            {
+                return false;
+            }
+            if (XPositionShipFront > XPositionShipBack && XPositionShipBack - shipSize < 1)
+            {
+                return false;
+            }
+            if (XPositionShipFront < XPositionShipBack && XPositionShipBack + shipSize > 10)
+            {
+                return false;
+            }
             if (YPositionShipFront < YPositionShipBack)
             {
                 for (int i = YPositionShipFront; i < (YPositionShipFront + shipSize); i++)
@@ -252,6 +371,60 @@
             }
         }
     }
+    public class GameAI
+    {
+        public Random Random = new Random();
+        public int AiBattleshipMax = 2;
+        public int AiSubmarineMax = 3;
+        public int AiDestroyerMax = 4;
+        public int AiCarrierMax = 1;
+        public string? ShipDirection;
+        public bool ValidShipSelection = false;
+        public int GetShipSelection()
+        {
+            return Random.Next(2, 6);
+        }
+        public int GetShipFrontPlacement()
+        {
+            return Random.Next(0, 10);
+        }
+        public string GetShipDirection()
+        {
+            return $"{Random.Next(0, 2)}{Random.Next(0, 2)}";
+        }
+        public int GetShipBackPlacementX(string shipDirection, int shipLength, int x, int y)
+        {
+            switch (shipDirection)
+            {
+                case "00":
+                    return x;
+                case "01":
+                    return x;
+                case "10":
+                    return x - (shipLength - 1);
+                case "11":
+                    return x + (shipLength - 1);
+            }
+            return x;
+        }
+        public int GetShipBackPlacementY(string shipDirection, int shipLength, int x, int y)
+        {
+            switch (shipDirection)
+            {
+                case "00":
+                    return y - (shipLength - 1);
+                case "01":
+                    return y + (shipLength - 1);
+                case "10":
+                    return y;
+                case "11":
+                    return y;
+            }
+            return y;
+        }
+    }
+
+
     public class GameUI
     {
         public string cursor = "  ";
@@ -265,6 +438,7 @@
         public int mapHeight = 12;
         public char[,] map;
         public string[,] shipMap;
+        public string[,] aiShipMap;
         public string[,] shipSelection;
         public void DrawShipPlacementFeedback(bool shipPlacementSelected, bool shipFrontPlaced)
         {
