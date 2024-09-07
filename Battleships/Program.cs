@@ -20,6 +20,7 @@
             Console.Clear();
             Console.CursorVisible = false;
 
+
             //Initial UI state
             ui.map = ui.GenerateMap();
             ui.DrawMap(ui.map);
@@ -32,9 +33,6 @@
 
             Console.SetCursorPosition(engine.XCursor, engine.YCursor);
             Helpers.MoveCursor(engine.XCursor, engine.YCursor, ui.cursor);
-
-            
-                      
 
             //
             //Ship placement phase
@@ -227,7 +225,7 @@
                     ai.ShipDirection = ai.GetShipDirection();
 
                     engine.XPositionShipBack = ai.GetShipBackPlacementX(ai.ShipDirection, engine.selectedShipLength, engine.XPositionShipFront, engine.YPositionShipFront);
-                    engine.YPositionShipBack = ai.GetShipBackPlacementY(ai.ShipDirection, engine.selectedShipLength, engine.XPositionShipFront, engine.YPositionShipFront);
+                    engine.YPositionShipBack = ai.GetShipBackPlacementY(ai.ShipDirection, engine.selectedShipLength, engine.XPositionShipFront, engine.YPositionShipFront);                                       
 
                 } while (!engine.GetValidShipPlacement(ui.aiShipMap, engine.XPositionShipFront + 1, engine.YPositionShipFront + 1, engine.XPositionShipBack + 1, engine.YPositionShipBack + 1, engine.selectedShipLength, ui.sea));
 
@@ -301,22 +299,26 @@
         public int selectedShipLength = 0;
         public bool GetValidShipPlacement(string[,] shipMap, int XPositionShipFront, int YPositionShipFront, int XPositionShipBack, int YPositionShipBack, int shipSize, string sea)
         {
-            if (YPositionShipFront > YPositionShipBack && YPositionShipBack - shipSize < 1)
+            if (YPositionShipFront > YPositionShipBack && YPositionShipFront - shipSize < 0)
             {
                 return false;
             }
-            if (YPositionShipFront < YPositionShipBack && YPositionShipBack + shipSize > 10)
+            if (YPositionShipFront < YPositionShipBack && YPositionShipFront + shipSize > 11)
             {
                 return false;
             }
-            if (XPositionShipFront > XPositionShipBack && XPositionShipBack - shipSize < 1)
+            if (XPositionShipFront > XPositionShipBack && XPositionShipFront - shipSize < 0)
             {
                 return false;
             }
-            if (XPositionShipFront < XPositionShipBack && XPositionShipBack + shipSize > 10)
+            if (XPositionShipFront < XPositionShipBack && XPositionShipFront + shipSize > 11)
             {
                 return false;
             }
+            if(XPositionShipFront == XPositionShipBack && YPositionShipFront == YPositionShipBack)
+            {
+                return false;
+            } 
             if (YPositionShipFront < YPositionShipBack)
             {
                 for (int i = YPositionShipFront; i < (YPositionShipFront + shipSize); i++)
@@ -380,6 +382,7 @@
         public int AiCarrierMax = 1;
         public string? ShipDirection;
         public bool ValidShipSelection = false;
+        public bool ValidPlacement = false;
         public int GetShipSelection()
         {
             return Random.Next(2, 6);
@@ -421,6 +424,26 @@
                     return y;
             }
             return y;
+        }
+        public bool GetValidCoordinates(int XPositionShipFront, int YPositionShipFront, int XPositionShipBack, int YPositionShipBack, int shipSize)
+        {
+            if (YPositionShipFront > YPositionShipBack && YPositionShipBack - shipSize < 0)
+            {
+                return false;
+            }
+            if (YPositionShipFront < YPositionShipBack && YPositionShipBack + shipSize > 9)
+            {
+                return false;
+            }
+            if (XPositionShipFront > XPositionShipBack && XPositionShipBack - shipSize < 0)
+            {
+                return false;
+            }
+            if (XPositionShipFront < XPositionShipBack && XPositionShipBack + shipSize > 9)
+            {
+                return false;
+            }
+            return true;
         }
     }
 
