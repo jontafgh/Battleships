@@ -20,23 +20,23 @@
             Console.Clear();
             Console.CursorVisible = false;
 
-
             //Initial UI state
             ui.map = ui.GenerateMap();
-            ui.DrawMap(ui.map, ui.PlayerMapPositionX, ui.PlayerMapPositionY);
+            ui.DrawMap(ui.map, GameUI.PlayerMapPositionX, GameUI.PlayerMapPositionY);
 
             ui.shipMap = ui.GenerateShipMap();
-            ui.DrawShipMap(ui.shipMap, ui.PlayerMapPositionX, ui.PlayerMapPositionY);
+            ui.DrawShipMap(ui.shipMap, GameUI.PlayerMapPositionX, GameUI.PlayerMapPositionY);
 
             ui.shipSelection = ui.GenerateShipSelection(engine.carrierMax, engine.battleshipMax, engine.submarineMax, engine.destroyerMax);
             ui.DrawShipSelection(ui.shipSelection);
 
             Console.SetCursorPosition(engine.XCursor, engine.YCursor);
-            Helpers.MoveCursor(engine.XCursor, engine.YCursor, ui.cursor);
+            Helpers.MoveCursor(engine.XCursor, engine.YCursor, GameUI.cursor);
 
             //
             //Ship placement phase
             //
+
             do
             {
                 consoleKey = Console.ReadKey(true);
@@ -45,7 +45,7 @@
                 Helpers.MoveCursor(engine.XCursor, engine.YCursor, "  ");
 
                 //Draw Ships
-                ui.DrawShipMap(ui.shipMap, ui.PlayerMapPositionX, ui.PlayerMapPositionY);
+                ui.DrawShipMap(ui.shipMap, GameUI.PlayerMapPositionX, GameUI.PlayerMapPositionY);
 
                 //Draw Ship Selection UI
                 ui.DrawShipSelection(ui.shipSelection);
@@ -116,7 +116,7 @@
                             {
                                 engine.XPositionShipBack = engine.XCursor;
                                 engine.YPositionShipBack = engine.YCursor;
-                                if (engine.GetValidShipPlacement(ui.shipMap, engine.XPositionShipFront, engine.YPositionShipFront, engine.XPositionShipBack, engine.YPositionShipBack, engine.selectedShipLength, ui.sea))
+                                if (engine.GetValidShipPlacement(ui.shipMap, engine.XPositionShipFront, engine.YPositionShipFront, engine.XPositionShipBack, engine.YPositionShipBack, engine.selectedShipLength))
                                 {
                                     ui.shipMap = ui.PlaceShip(ui.shipMap, engine.XPositionShipFront, engine.YPositionShipFront, engine.XPositionShipBack, engine.YPositionShipBack, engine.selectedShipLength);
                                     switch (engine.selectedShipLength)
@@ -137,7 +137,7 @@
                                     ui.shipSelection = ui.GenerateShipSelection(engine.carrierMax, engine.battleshipMax, engine.submarineMax, engine.destroyerMax);
                                     ui.DrawShipSelection(ui.shipSelection);
                                 }
-                                ui.DrawShipMap(ui.shipMap, ui.PlayerMapPositionX, ui.PlayerMapPositionY);
+                                ui.DrawShipMap(ui.shipMap, GameUI.PlayerMapPositionX, GameUI.PlayerMapPositionY);
                                 engine.shipFrontPlaced = false;
                                 engine.shipPlacementSelected = false;
                             }
@@ -149,14 +149,14 @@
                 ui.DrawShipPlacementFeedback(engine.shipPlacementSelected, engine.shipFrontPlaced);
 
                 //Edge detection                
-                if (ui.map[engine.XCursor, engine.YCursor] == ui.wall)
+                if (ui.map[engine.XCursor, engine.YCursor] == GameUI.wall)
                 {
                     engine.XCursor = engine.XCursorStored;
                     engine.YCursor = engine.YCursorStored;
                 }
 
                 //Move Cursor                
-                Helpers.MoveCursor(engine.XCursor, engine.YCursor, ui.cursor);
+                Helpers.MoveCursor(engine.XCursor, engine.YCursor, GameUI.cursor);
 
             } while (!engine.GetAllShipsPlaced(engine.carrierMax, engine.battleshipMax, engine.submarineMax, engine.destroyerMax));
 
@@ -225,9 +225,9 @@
                     ai.ShipDirection = ai.GetShipDirection();
 
                     engine.XPositionShipBack = ai.GetShipBackPlacementX(ai.ShipDirection, engine.selectedShipLength, engine.XPositionShipFront, engine.YPositionShipFront);
-                    engine.YPositionShipBack = ai.GetShipBackPlacementY(ai.ShipDirection, engine.selectedShipLength, engine.XPositionShipFront, engine.YPositionShipFront);                                       
+                    engine.YPositionShipBack = ai.GetShipBackPlacementY(ai.ShipDirection, engine.selectedShipLength, engine.XPositionShipFront, engine.YPositionShipFront);
 
-                } while (!engine.GetValidShipPlacement(ui.aiShipMap, engine.XPositionShipFront + 1, engine.YPositionShipFront + 1, engine.XPositionShipBack + 1, engine.YPositionShipBack + 1, engine.selectedShipLength, ui.sea));
+                } while (!engine.GetValidShipPlacement(ui.aiShipMap, engine.XPositionShipFront + 1, engine.YPositionShipFront + 1, engine.XPositionShipBack + 1, engine.YPositionShipBack + 1, engine.selectedShipLength));
 
                 ui.aiShipMap = ui.PlaceShip(ui.aiShipMap, engine.XPositionShipFront + 1, engine.YPositionShipFront + 1, engine.XPositionShipBack + 1, engine.YPositionShipBack + 1, engine.selectedShipLength);
 
@@ -266,26 +266,79 @@
             //
 
             Console.Clear();
-            ui.DrawMap(ui.map, ui.PlayerMapPositionX, ui.PlayerMapPositionY);
-            ui.DrawMap(ui.map, ui.AiMapPositionX, ui.AiMapPositionY);
-            ui.DrawShipMap(ui.shipMap, ui.PlayerMapPositionX, ui.PlayerMapPositionY);
-            ui.DrawShipMap(ui.aiShipMap, ui.AiMapPositionX, ui.AiMapPositionY);
 
-            engine.XCursor = ui.AiMapPositionX + 2;
-            engine.YCursor = ui.AiMapPositionY + 2;
-            Console.SetCursorPosition(ui.AiMapPositionX + 2, ui.AiMapPositionY + 2);
-            Helpers.MoveCursor(engine.XCursor, engine.YCursor, ui.cursor);
+            ui.DrawMap(ui.map, GameUI.PlayerMapPositionX, GameUI.PlayerMapPositionY);
+            ui.DrawMap(ui.map, GameUI.AiMapPositionX, GameUI.AiMapPositionY);
+            ui.DrawShipMap(ui.shipMap, GameUI.PlayerMapPositionX, GameUI.PlayerMapPositionY);
+            ui.DrawShipMap(ui.aiShipMap, GameUI.AiMapPositionX, GameUI.AiMapPositionY);
 
-            Console.ReadKey();
+            engine.XCursor = GameUI.AiMapPositionX + 2;
+            engine.YCursor = GameUI.AiMapPositionY + 2;
+            Console.SetCursorPosition(GameUI.AiMapPositionX + 2, GameUI.AiMapPositionY + 2);
+            Helpers.MoveCursor(engine.XCursor, engine.YCursor, GameUI.cursor);
 
             //
             //Main game phase
             //
 
+            do
+            {
+                consoleKey = Console.ReadKey(true);
+
+                //Clear old cursor                
+                Helpers.MoveCursor(engine.XCursor, engine.YCursor, "  ");
+
+                //Draw Ships
+                ui.DrawShipMap(ui.shipMap, GameUI.PlayerMapPositionX, GameUI.PlayerMapPositionY);
+                ui.DrawShipMap(ui.aiShipMap, GameUI.AiMapPositionX, GameUI.AiMapPositionY);
+
+                //Draw remaining ships UI
+
+
+                //Save cursor position in case of edge of map
+                engine.XCursorStored = engine.XCursor;
+                engine.YCursorStored = engine.YCursor;
+
+                switch (consoleKey.Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        engine.YCursor--;
+                        Console.SetCursorPosition(engine.XCursor, engine.YCursor);
+                        break;
+                    case ConsoleKey.DownArrow:
+                        engine.YCursor++;
+                        Console.SetCursorPosition(engine.XCursor, engine.YCursor);
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        engine.XCursor--;
+                        Console.SetCursorPosition(engine.XCursor, engine.YCursor);
+                        break;
+                    case ConsoleKey.RightArrow:
+                        engine.XCursor++;
+                        Console.SetCursorPosition(engine.XCursor, engine.YCursor);
+                        break;
+                    case ConsoleKey.Spacebar:
+                        //Shooting enemy ships logic
+                        engine.Hit = engine.GetHit(ui.aiShipMap, engine.XCursor - GameUI.AiMapPositionX, engine.YCursor);
+                        ui.aiShipMap = ui.ShootShip(ui.aiShipMap, engine.XCursor - GameUI.AiMapPositionX, engine.YCursor, engine.Hit);
+                        break;
+                }                
+
+                //Edge detection                
+                if (ui.map[engine.XCursor - GameUI.AiMapPositionX, engine.YCursor] == GameUI.wall)
+                {
+                    engine.XCursor = engine.XCursorStored;
+                    engine.YCursor = engine.YCursorStored;
+                }
+
+                //Move Cursor                
+                Helpers.MoveCursor(engine.XCursor, engine.YCursor, GameUI.cursor);
+
+
+
+            } while (true);
         }
-
     }
-
     public class Engine
     {
         public int XCursor = 5;
@@ -295,6 +348,7 @@
         public bool shipFrontPlaced = false;
         public bool shipPlacementSelected = false;
         public bool allShipsPlaced = false;
+        public bool Hit = false;
         public int XPositionShipFront = 0;
         public int YPositionShipFront = 0;
         public int XPositionShipBack = 0;
@@ -308,7 +362,7 @@
         public int submarineLength = 3;
         public int destroyerLength = 2;
         public int selectedShipLength = 0;
-        public bool GetValidShipPlacement(string[,] shipMap, int XPositionShipFront, int YPositionShipFront, int XPositionShipBack, int YPositionShipBack, int shipSize, string sea)
+        public bool GetValidShipPlacement(string[,] shipMap, int XPositionShipFront, int YPositionShipFront, int XPositionShipBack, int YPositionShipBack, int shipSize)
         {
             if (YPositionShipFront > YPositionShipBack && YPositionShipFront - shipSize < 0)
             {
@@ -326,15 +380,15 @@
             {
                 return false;
             }
-            if(XPositionShipFront == XPositionShipBack && YPositionShipFront == YPositionShipBack)
+            if (XPositionShipFront == XPositionShipBack && YPositionShipFront == YPositionShipBack)
             {
                 return false;
-            } 
+            }
             if (YPositionShipFront < YPositionShipBack)
             {
                 for (int i = YPositionShipFront; i < (YPositionShipFront + shipSize); i++)
                 {
-                    if (shipMap[XPositionShipFront - 1, i - 1] != sea)
+                    if (shipMap[XPositionShipFront - 1, i - 1] != GameUI.sea)
                     {
                         return false;
                     }
@@ -344,7 +398,7 @@
             {
                 for (int i = YPositionShipFront; i > (YPositionShipFront - shipSize); i--)
                 {
-                    if (shipMap[XPositionShipFront - 1, i - 1] != sea)
+                    if (shipMap[XPositionShipFront - 1, i - 1] != GameUI.sea)
                     {
                         return false;
                     }
@@ -354,7 +408,7 @@
             {
                 for (int i = XPositionShipFront; i < (XPositionShipFront + (shipSize)); i++)
                 {
-                    if (shipMap[i - 1, YPositionShipFront - 1] != sea)
+                    if (shipMap[i - 1, YPositionShipFront - 1] != GameUI.sea)
                     {
                         return false;
                     }
@@ -364,7 +418,7 @@
             {
                 for (int i = XPositionShipFront; i > (XPositionShipFront - (shipSize)); i--)
                 {
-                    if (shipMap[i - 1, YPositionShipFront - 1] != sea)
+                    if (shipMap[i - 1, YPositionShipFront - 1] != GameUI.sea)
                     {
                         return false;
                     }
@@ -382,6 +436,27 @@
             {
                 return false;
             }
+        }
+        public bool GetHit(string[,] shipMap, int x, int y)
+        {            
+            for (int i = 0; i < shipMap.GetLength(0); i++)
+            {
+                if (i == x - 1)
+                {
+                    for (int j = 0; j < shipMap.GetLength(1); j++)
+                    {
+                        if (j == y - 1)
+                        {
+                            if (shipMap[i, j] != GameUI.sea)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+
         }
     }
     public class GameAI
@@ -457,28 +532,27 @@
             return true;
         }
     }
-
-
     public class GameUI
     {
-        public string cursor = "  ";
-        public char wall = '█';
-        public string sea = "  ";
-        public string carrier = "██";
-        public string battleship = "▓▓";
-        public string submarine = "░░";
-        public string destroyer = "▒▒";
-        public int mapWidth = 12;
-        public int mapHeight = 12;
+        public static string cursor = "  ";
+        public static char wall = '█';
+        public static string sea = "  ";
+        public static string carrier = "██";
+        public static string battleship = "▓▓";
+        public static string submarine = "░░";
+        public static string destroyer = "▒▒";
+        public static string HitMarker = "()";
+        public static string MissMarker = "XX";
+        public static int mapWidth = 12;
+        public static int mapHeight = 12;
+        public static int PlayerMapPositionY = 0;
+        public static int PlayerMapPositionX = 0;
+        public static int AiMapPositionY = 0;
+        public static int AiMapPositionX = 15;
         public char[,] map;
         public string[,] shipMap;
         public string[,] aiShipMap;
         public string[,] shipSelection;
-        public int PlayerMapPositionY = 0;
-        public int PlayerMapPositionX = 0;
-        public int AiMapPositionY = 0;
-        public int AiMapPositionX = 15;
-
         public void DrawShipPlacementFeedback(bool shipPlacementSelected, bool shipFrontPlaced)
         {
             if (shipPlacementSelected && !shipFrontPlaced)
@@ -725,7 +799,24 @@
             Helpers.Write(0, 21, "[1]Carrier    [2]Battleship [3]Submarine  [4]Destroyer");
             Helpers.Write(0, 23, "Place your ships, select by using numbers in brackets []");
         }
-
+        public string[,] ShootShip(string[,] shipMap, int x, int y, bool hit)
+        {
+            for (int i = 0; i < shipMap.GetLength(0); i++)
+            {
+                if (i == x - 1)
+                {
+                    for (int j = 0; j < shipMap.GetLength(1); j++)
+                    {
+                        if (j == y - 1)
+                        {
+                            shipMap[i, j] = (hit) ? GameUI.HitMarker : GameUI.MissMarker;
+                            return shipMap;
+                        }
+                    }
+                }                
+            }
+            return shipMap;
+        }
     }
     public static class Helpers
     {
