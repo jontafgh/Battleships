@@ -221,8 +221,8 @@
                     } while (!ai.ValidShipSelection);
 
 
-                    engine.XPositionShipFront = ai.GetShipFrontPlacement();
-                    engine.YPositionShipFront = ai.GetShipFrontPlacement();
+                    engine.XPositionShipFront = ai.GetShotOrShipPlacement();
+                    engine.YPositionShipFront = ai.GetShotOrShipPlacement();
 
                     ai.ShipDirection = ai.GetShipDirection();
 
@@ -288,6 +288,10 @@
 
             do
             {
+                //
+                //Player Turn
+                //
+
                 consoleKey = Console.ReadKey(true);
 
                 //Clear old cursor                
@@ -344,11 +348,18 @@
                 //Move Cursor                
                 Helpers.MoveCursor(engine.XCursor, engine.YCursor, GameGraphics.cursor);
 
+                //
+                //Ai Turn
+                //
+
+                ai.ShotX = ai.GetShotOrShipPlacement();
+                ai.ShotY = ai.GetShotOrShipPlacement();
+
                 //Wind detection
                 engine.Win = engine.GetWin(aiGraphic.concealedShipMap);
 
             } while (!engine.Win);
-
+            
             Console.WriteLine("You won!");
             Console.ReadKey();
         }
@@ -495,47 +506,49 @@
         public int AiSubmarineMax = 3;
         public int AiDestroyerMax = 4;
         public int AiCarrierMax = 1;
-        public string? ShipDirection;
+        public int ShipDirection;
         public bool ValidShipSelection = false;
         public bool ValidPlacement = false;
+        public int ShotX;
+        public int ShotY;
         public int GetShipSelection()
         {
             return Random.Next(2, 6);
         }
-        public int GetShipFrontPlacement()
+        public int GetShotOrShipPlacement()
         {
             return Random.Next(0, 10);
         }
-        public string GetShipDirection()
+        public int GetShipDirection()
         {
-            return $"{Random.Next(0, 2)}{Random.Next(0, 2)}";
+            return Random.Next(0, 4);
         }
-        public int GetShipBackPlacementX(string shipDirection, int shipLength, int x, int y)
+        public int GetShipBackPlacementX(int shipDirection, int shipLength, int x, int y)
         {
             switch (shipDirection)
             {
-                case "00":
+                case 0:
                     return x;
-                case "01":
+                case 1:
                     return x;
-                case "10":
+                case 2:
                     return x - (shipLength - 1);
-                case "11":
+                case 3:
                     return x + (shipLength - 1);
             }
             return x;
         }
-        public int GetShipBackPlacementY(string shipDirection, int shipLength, int x, int y)
+        public int GetShipBackPlacementY(int shipDirection, int shipLength, int x, int y)
         {
             switch (shipDirection)
             {
-                case "00":
+                case 0:
                     return y - (shipLength - 1);
-                case "01":
+                case 1:
                     return y + (shipLength - 1);
-                case "10":
+                case 2:
                     return y;
-                case "11":
+                case 3:
                     return y;
             }
             return y;
