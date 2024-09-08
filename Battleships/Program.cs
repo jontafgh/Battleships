@@ -1,4 +1,7 @@
-﻿namespace Battleships
+﻿using System.ComponentModel.Design;
+using System.Net.Http.Headers;
+
+namespace Battleships
 
 {
     internal class Program
@@ -271,6 +274,7 @@
 
             aiGraphic.mapBorders = aiGraphic.GenerateMap();
             aiGraphic.concealedShipMap = aiGraphic.GenerateShipMap();
+            playerGraphics.concealedShipMap = playerGraphics.GenerateShipMap();
 
             playerGraphics.DrawMap(playerGraphics.mapBorders, GameGraphics.PlayerMapPositionX, GameGraphics.PlayerMapPositionY);
             aiGraphic.DrawMap(aiGraphic.mapBorders, GameGraphics.AiMapPositionX, GameGraphics.AiMapPositionY);
@@ -298,7 +302,7 @@
                 Helpers.MoveCursor(engine.XCursor, engine.YCursor, "  ");
 
                 //Draw Ships
-                playerGraphics.DrawShipMap(playerGraphics.shipMap, GameGraphics.PlayerMapPositionX, GameGraphics.PlayerMapPositionY);
+                playerGraphics.DrawShipMap(playerGraphics.concealedShipMap, GameGraphics.PlayerMapPositionX, GameGraphics.PlayerMapPositionY);
                 aiGraphic.DrawShipMap(aiGraphic.concealedShipMap, GameGraphics.AiMapPositionX, GameGraphics.AiMapPositionY);
 
                 //Draw remaining ships UI
@@ -352,14 +356,133 @@
                 //Ai Turn
                 //
 
-                ai.ShotX = ai.GetShotOrShipPlacement();
-                ai.ShotY = ai.GetShotOrShipPlacement();
 
-                //Wind detection
+                do
+                {
+                    //Check for valid shots so to not get stuck in a loop
+                    if (ai.shotCounter == 4)
+                    {
+                        ai.hitCounter = 0;
+                        ai.shotCounter = 0;
+                    }
+
+                    switch (ai.hitCounter)
+                    {
+                        case 0:
+                            //TODO
+                            //Logic if there is ships that are not completly shot down
+
+                            //Get coordinates
+                            ai.ShotX = ai.GetShotOrShipPlacement();
+                            ai.ShotY = ai.GetShotOrShipPlacement();
+
+                            break;
+                        case 1:
+
+                            //Get coordinates with previous hit in mind
+                            ai.ShotX = ai.GetShotAfterOneHit(ai.StoredHitsX[0]);
+                            ai.ShotY = ai.GetShotAfterOneHit(ai.StoredHitsY[0], ai.ShotX, ai.StoredHitsX[0]);
+
+                            break;
+                        case 2:
+                        case 3:
+                        case 4:
+
+                            ai.ShotX = ai.GetShotAfterTwoOrMoreHits(ai.StoredHitsX, ai.StoredHitsX[ai.hitCounter - 1], ai.hitCounter);
+                            ai.ShotY = ai.GetShotAfterTwoOrMoreHits(ai.StoredHitsY, ai.StoredHitsY[ai.hitCounter - 1], ai.hitCounter);
+
+                            break;
+
+
+                    }
+
+                    //Get if coordinates is valid
+                    engine.ValidShot = engine.GetValidShot(playerGraphics.concealedShipMap, ai.ShotX + 1, ai.ShotY + 1);
+
+                    //Store shots for check if theres no valid shots left    
+                    ai.shotCounter++;
+
+                } while (!engine.ValidShot);
+
+                //Update map
+                playerGraphics.concealedShipMap = aiGraphic.ShootShip(playerGraphics.shipMap, playerGraphics.concealedShipMap, ai.ShotX + 1, ai.ShotY + 1);
+
+                //Reset valid checker
+                ai.shotCounter = 0;
+
+                //Get if hit
+                engine.Hit = engine.GetHitShot(playerGraphics.shipMap, ai.ShotX + 1, ai.ShotY + 1);
+                
+                //Hit logic
+                if (engine.Hit)
+                {                    
+                    //Save hits
+                    ai.StoredHitsX[ai.hitCounter] = ai.ShotX;
+                    ai.StoredHitsY[ai.hitCounter] = ai.ShotY;
+                    ai.hitCounter++;
+
+                    //Check for type of ship
+                    switch (ai.hitCounter)
+                    {
+                        case 0:                            
+                        case 1:                            
+                            break;
+                        case 2:
+                            if (playerGraphics.concealedShipMap[ai.ShotX, ai.ShotY] == GameGraphics.hitDestroyer && playerGraphics.concealedShipMap[ai.StoredHitsX[1], ai.StoredHitsY[1]] == GameGraphics.hitDestroyer)
+                            {
+                                ai.hitCounter = 0;
+                                ai.StoredHitsX = new int[5];
+                                ai.StoredHitsY = new int[5];
+                            }
+                            else if (playerGraphics.concealedShipMap[ai.ShotX, ai.ShotY] != playerGraphics.concealedShipMap[ai.StoredHitsX[1], ai.StoredHitsY[1]])
+                            {
+                                ai.hitCounter--;
+                            }
+                            break;
+                        case 3:
+                            if (playerGraphics.concealedShipMap[ai.ShotX, ai.ShotY] == GameGraphics.hitSubmarine && playerGraphics.concealedShipMap[ai.StoredHitsX[2], ai.StoredHitsY[2]] == GameGraphics.hitSubmarine)
+                            {
+                                ai.hitCounter = 0;
+                                ai.StoredHitsX = new int[5];
+                                ai.StoredHitsY = new int[5];
+                            }
+                            else if (playerGraphics.concealedShipMap[ai.ShotX, ai.ShotY] != playerGraphics.concealedShipMap[ai.StoredHitsX[2], ai.StoredHitsY[2]])
+                            {
+                                ai.hitCounter--;
+                            }
+                            break;
+                        case 4:
+                            if (playerGraphics.concealedShipMap[ai.ShotX, ai.ShotY] == GameGraphics.hitBattleship && playerGraphics.concealedShipMap[ai.StoredHitsX[3], ai.StoredHitsY[3]] == GameGraphics.hitBattleship)
+                            {
+                                ai.hitCounter = 0;
+                                ai.StoredHitsX = new int[5];
+                                ai.StoredHitsY = new int[5];
+                            }
+                            else if (playerGraphics.concealedShipMap[ai.ShotX, ai.ShotY] != playerGraphics.concealedShipMap[ai.StoredHitsX[3], ai.StoredHitsY[3]])
+                            {
+                                ai.hitCounter--;
+                            }
+                            break;
+                        default:
+                            ai.hitCounter = 0;
+                            ai.StoredHitsX = new int[5];
+                            ai.StoredHitsY = new int[5];
+                            break;
+                    }
+                }
+                              
+
+                //
+                //End of ai turn
+                //
+
+
+
+                //Win detection
                 engine.Win = engine.GetWin(aiGraphic.concealedShipMap);
 
             } while (!engine.Win);
-            
+
             Console.WriteLine("You won!");
             Console.ReadKey();
         }
@@ -375,6 +498,7 @@
         public bool allShipsPlaced = false;
         public bool ValidShot = false;
         public bool Win = false;
+        public bool Hit = false;
         public int XPositionShipFront = 0;
         public int YPositionShipFront = 0;
         public int XPositionShipBack = 0;
@@ -465,6 +589,11 @@
         }
         public bool GetValidShot(string[,] shipMap, int x, int y)
         {
+            if (x - 1 > 9 || x - 1 < 0 || y - 1 > 9 || y - 1 < 0)
+            {
+                return false;
+            }
+
             for (int i = 0; i < shipMap.GetLength(0); i++)
             {
                 if (i == x - 1)
@@ -482,6 +611,26 @@
                 }
             }
             return true;
+        }
+        public bool GetHitShot(string[,] shipMap, int x, int y)
+        {
+            for (int i = 0; i < shipMap.GetLength(0); i++)
+            {
+                if (i == x - 1)
+                {
+                    for (int j = 0; j < shipMap.GetLength(1); j++)
+                    {
+                        if (j == y - 1)
+                        {
+                            if (shipMap[i, j] == GameGraphics.carrier || shipMap[i, j] == GameGraphics.battleship || shipMap[i, j] == GameGraphics.submarine || shipMap[i, j] == GameGraphics.destroyer)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
         }
         public bool GetWin(string[,] concealedShipMap)
         {
@@ -511,6 +660,13 @@
         public bool ValidPlacement = false;
         public int ShotX;
         public int ShotY;
+        public int[] StoredHitsX = new int[5];
+        public int[] StoredHitsY = new int[5];
+        public int[] StoredShotsX = new int[5];
+        public int[] StoredShotsY = new int[5];
+        public int shotCounter = 0;
+        public int hitCounter = 0;
+        public bool noValidShots = false;
         public int GetShipSelection()
         {
             return Random.Next(2, 6);
@@ -573,6 +729,39 @@
             }
             return true;
         }
+        public int GetShotAfterOneHit(int axis)
+        {
+            int fiftyFifty = Random.Next(0, 2);
+            return (fiftyFifty == 1) ? Random.Next(axis - 1, axis + 2) : axis;
+        }
+        public int GetShotAfterOneHit(int axis, int previousAxis, int savedAxis)
+        {
+            int direction = 0;
+            do
+            {
+                direction = Random.Next(axis - 1, axis + 2);
+            } while (direction == axis);
+            return (previousAxis == savedAxis) ? direction : axis;
+        }
+        public int GetShotAfterTwoOrMoreHits(int[] storedHits, int axis, int hitCounter)
+        {
+            int fiftyFifty = Random.Next(0, 2);
+
+            if (storedHits[hitCounter - 1] > storedHits[0])
+            {
+                return (fiftyFifty == 1) ? axis + 1 : axis - hitCounter;
+            }
+            else if (storedHits[hitCounter - 1] < storedHits[0])
+            {
+                return (fiftyFifty == 1) ? axis - 1 : axis + hitCounter;
+            }
+            else
+            {
+                return axis;
+            }
+
+        }
+
     }
     public class GameGraphics
     {
