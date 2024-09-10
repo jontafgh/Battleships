@@ -16,10 +16,16 @@
             Console.Write(wall);
 
         }
-        public static void MoveCursor(int XCursor, int YCursor, string cursor)
+        public static void MoveCursor(int XCursor, int YCursor)
         {
             Console.BackgroundColor = ConsoleColor.White;
-            Helpers.Write(XCursor, YCursor, cursor);
+            Helpers.Write(XCursor, YCursor, GameGraphics.cursor);
+            Console.BackgroundColor = ConsoleColor.Black;
+        }
+        public static void MoveCursor(int XCursor, int YCursor, string customCursor)
+        {
+            Console.BackgroundColor = ConsoleColor.White;
+            Helpers.Write(XCursor, YCursor, customCursor);
             Console.BackgroundColor = ConsoleColor.Black;
         }
     }
