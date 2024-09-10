@@ -130,7 +130,6 @@ namespace Battleships
             }
             return true;
         }
-        
         public bool GetWin(string[,] concealedShipMap)
         {
             int hitCounter = 0;
