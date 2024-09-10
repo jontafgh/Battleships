@@ -151,21 +151,21 @@
             }
             return true;
         }
-        public int GetShotAfterOneHit(int axis)
+        public int GetShotAfterOneHitX()
         {
             int fiftyFifty = Random.Next(0, 2);
-            return (fiftyFifty == 1) ? Random.Next(axis - 1, axis + 2) : axis;
+            return (fiftyFifty == 1) ? Random.Next(StoredHitsX[0] - 1, StoredHitsX[0] + 2) : StoredHitsX[0];
         }
-        public int GetShotAfterOneHit(int axis, int previousAxis, int savedAxis)
+        public int GetShotAfterOneHitY()
         {
             int direction = 0;
             do
             {
-                direction = Random.Next(axis - 1, axis + 2);
-            } while (direction == axis);
-            return (previousAxis == savedAxis) ? direction : axis;
+                direction = Random.Next(StoredHitsY[0] - 1, StoredHitsY[0] + 2);
+            } while (direction == StoredHitsY[0]);
+            return (ShotX == StoredHitsX[0]) ? direction : StoredHitsY[0];
         }
-        public int GetShotAfterTwoOrMoreHits(int[] storedHits, int axis, int hitCounter)
+        public int GetShotAfterTwoOrMoreHits(int[] storedHits, int axis)
         {
             int fiftyFifty = Random.Next(0, 2);
 
@@ -182,6 +182,33 @@
                 return axis;
             }
 
+        }
+        public void GetShot()
+        {
+            if (shotCounter == 4)
+            {
+                hitCounter = 0;
+                shotCounter = 0;
+            }
+
+            switch (hitCounter)
+            {
+                case 0:
+                    ShotX = GetShotOrShipPlacement();
+                    ShotY = GetShotOrShipPlacement();
+                    break;
+                case 1:
+                    ShotX = GetShotAfterOneHitX();
+                    ShotY = GetShotAfterOneHitY();
+                    break;
+                case 2:
+                case 3:
+                case 4:
+                    ShotX = GetShotAfterTwoOrMoreHits(StoredHitsX, StoredHitsX[hitCounter - 1]);
+                    ShotY = GetShotAfterTwoOrMoreHits(StoredHitsY, StoredHitsY[hitCounter - 1]);
+                    break;
+            }
+            shotCounter++;
         }
         public bool GetAllShipsPlaced()
         {
@@ -403,7 +430,7 @@
             return true;
 
         }
-        public bool GetHitShot(string[,] shipMap)
+        public bool GetShotHitOrNot(string[,] shipMap)
         {
             for (int i = 0; i < shipMap.GetLength(0); i++)
             {
@@ -422,6 +449,63 @@
                 }
             }
             return false;
+        }
+        public void StoreShotHits()
+        {
+            StoredHitsX[hitCounter] = ShotX;
+            StoredHitsY[hitCounter] = ShotY;
+            hitCounter++;
+
+        }
+        public void CheckForTypeOfShipHit(string[,] concealedShipMap)
+        {
+            switch (hitCounter)
+            {
+                case 0:
+                case 1:
+                    break;
+                case 2:
+                    if (concealedShipMap[ShotX, ShotY] == GameGraphics.hitDestroyer && concealedShipMap[StoredHitsX[1], StoredHitsY[1]] == GameGraphics.hitDestroyer)
+                    {
+                        hitCounter = 0;
+                        StoredHitsX = new int[5];
+                        StoredHitsY = new int[5];
+                    }
+                    else if (concealedShipMap[ShotX, ShotY] != concealedShipMap[StoredHitsX[1], StoredHitsY[1]])
+                    {
+                        hitCounter--;
+                    }
+                    break;
+                case 3:
+                    if (concealedShipMap[ShotX, ShotY] == GameGraphics.hitSubmarine && concealedShipMap[StoredHitsX[2], StoredHitsY[2]] == GameGraphics.hitSubmarine)
+                    {
+                        hitCounter = 0;
+                        StoredHitsX = new int[5];
+                        StoredHitsY = new int[5];
+                    }
+                    else if (concealedShipMap[ShotX, ShotY] != concealedShipMap[StoredHitsX[2], StoredHitsY[2]])
+                    {
+                        hitCounter--;
+                    }
+                    break;
+                case 4:
+                    if (concealedShipMap[ShotX, ShotY] == GameGraphics.hitBattleship && concealedShipMap[StoredHitsX[3], StoredHitsY[3]] == GameGraphics.hitBattleship)
+                    {
+                        hitCounter = 0;
+                        StoredHitsX = new int[5];
+                        StoredHitsY = new int[5];
+                    }
+                    else if (concealedShipMap[ShotX, ShotY] != concealedShipMap[StoredHitsX[3], StoredHitsY[3]])
+                    {
+                        hitCounter--;
+                    }
+                    break;
+                default:
+                    hitCounter = 0;
+                    StoredHitsX = new int[5];
+                    StoredHitsY = new int[5];
+                    break;
+            }
         }
     }
 }
