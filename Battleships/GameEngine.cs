@@ -4,6 +4,30 @@ using System.Threading;
 namespace Battleships
 
 {
+    public interface IShipCaptain
+    {   
+        public int XCursor { get; set; }
+        public int YCursor { get; set; }
+        public int XPositionShipFront { get; set; }
+        public int YPositionShipFront { get; set; }
+        public int XPositionShipBack { get; set; }
+        public int YPositionShipBack { get; set; }
+        public int CarrierMax { get; set; }
+        public int BattleshipMax { get; set; }
+        public int SubmarineMax { get; set; }
+        public int DestroyerMax { get; set; }
+        public int CarrierLength { get; set; }
+        public int BattleshipLength { get; set; }
+        public int SubmarineLength { get; set; }
+        public int DestroyerLength { get; set; }
+        public int SelectedShipLength { get; set; }
+        public void PlaceShip();
+        public void GetValidShipPlacement();
+        public void GetAllShipsPlaced();
+        public void GetValidShot();
+        
+
+    }
     public class GameEngine
     {
         public int XCursor = 5;
