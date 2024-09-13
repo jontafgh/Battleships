@@ -67,12 +67,12 @@ namespace Battleships
                 engine.StoreCursorPosition();
 
                 engine.SpacebarPressed = engine.GetKeyPress(consoleKey);
-                engine.GetShipPlacement(playerGraphics.shipMap, playerGraphics.MapCheckOffsetConsideration);
+                engine.GetShipPlacement(playerGraphics.shipMap);
                 playerGraphics.shipSelection = playerGraphics.GenerateShipSelection(engine.CarrierMax, engine.BattleshipMax, engine.SubmarineMax, engine.DestroyerMax);
 
                 playerGraphics.DrawShipSelection();
                 playerGraphics.DrawShipMap();
-                playerGraphics.DrawShipPlacementFeedback(engine.shipPlacementSelected, engine.shipFrontPlaced);
+                playerGraphics.DrawShipPlacementFeedback(engine.ShipPlacementSelected, engine.ShipFrontPlaced);
 
                 engine.GetEdgeOfMapDetection(playerGraphics.mapBorders, playerGraphics.MapPositionX);
                 Helpers.MoveCursor(engine.XCursor, engine.YCursor);
@@ -142,7 +142,7 @@ namespace Battleships
 
                     if (engine.GetKeyPress(consoleKey))
                     {
-                        if (engine.GetValidShot(aiGraphic.concealedShipMap, playerGraphics.MapCheckOffsetConsideration, aiGraphic.MapPositionX))
+                        if (engine.GetValidShot(aiGraphic.concealedShipMap, aiGraphic.MapPositionX))
                         {
                             aiGraphic.MarkShotOnMap(engine.XCursor, engine.YCursor, aiGraphic.MapPositionX, playerGraphics.MapCheckOffsetConsideration);
                             engine.PlayerDoneShooting = true;
