@@ -17,7 +17,7 @@ namespace Battleships
             //Start
             //
 
-            GameEngine engine = new GameEngine();
+            Player engine = new Player();
             GameGraphics playerGraphics = new GameGraphics();
             GameGraphics aiGraphic = new GameGraphics();
             GameAI ai = new GameAI();
@@ -46,7 +46,7 @@ namespace Battleships
             playerGraphics.shipMap = playerGraphics.GenerateShipMap();
             playerGraphics.DrawShipMap();
 
-            playerGraphics.shipSelection = playerGraphics.GenerateShipSelection(engine.carrierMax, engine.battleshipMax, engine.submarineMax, engine.destroyerMax);
+            playerGraphics.shipSelection = playerGraphics.GenerateShipSelection(engine.CarrierMax, engine.BattleshipMax, engine.SubmarineMax, engine.DestroyerMax);
             playerGraphics.DrawShipSelection();
 
             Console.SetCursorPosition(engine.XCursor, engine.YCursor);
@@ -68,7 +68,7 @@ namespace Battleships
 
                 engine.SpacebarPressed = engine.GetKeyPress(consoleKey);
                 engine.GetShipPlacement(playerGraphics.shipMap, playerGraphics.MapCheckOffsetConsideration);
-                playerGraphics.shipSelection = playerGraphics.GenerateShipSelection(engine.carrierMax, engine.battleshipMax, engine.submarineMax, engine.destroyerMax);
+                playerGraphics.shipSelection = playerGraphics.GenerateShipSelection(engine.CarrierMax, engine.BattleshipMax, engine.SubmarineMax, engine.DestroyerMax);
 
                 playerGraphics.DrawShipSelection();
                 playerGraphics.DrawShipMap();
