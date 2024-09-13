@@ -22,10 +22,6 @@
         public int ShotCounter { get; set; }
         public int HitCounter { get; set; }
         public bool Win { get; set; }
-        public enum Ship
-        {
-            Destroyer = 2, Submarine = 3, Battleship = 4, Carrier = 5
-        }
         public void SelectShip();
         public void GetShipPlacement();
         public bool GetValidShipPlacement();

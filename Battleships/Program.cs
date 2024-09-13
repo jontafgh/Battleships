@@ -10,47 +10,25 @@ namespace Battleships
         {
             //TODO
             //Logic if there is ships that are not completly shot down
-            //Make GameAi inherit from GameEngine
-
 
             //
             //Start
             //
 
-            Player engine = new Player();
-            GameGraphics playerGraphics = new GameGraphics();
-            GameGraphics aiGraphic = new GameGraphics();
+            Player player = new Player();
             AI ai = new AI();
+            UserInterface graphics = new UserInterface();
 
-            //ConsoleKeyInfo consoleKey;
-            Console.SetWindowSize(120, 40);
-            Console.SetBufferSize(120, 40);
+            graphics.GetInnitialConsoleEnviroment();
 
-            Console.Clear();
-            Console.CursorVisible = false;
+            graphics.DrawMapBorders(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionY, player.Map.MapPositionX, player.Map.MapBorders);
 
-            //TODO add to constructor
-            playerGraphics.MapPositionX = 0;
-            playerGraphics.MapPositionY = 0;
-            playerGraphics.MapCheckOffsetConsideration = -1;
-            //
-            //TODO add to constructor
-            aiGraphic.MapPositionX = 15;
-            aiGraphic.MapPositionY = 0;
-            aiGraphic.MapCheckOffsetConsideration = 0;
-            //
+            graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionY, player.Map.MapPositionX, player.Map.ShipMap);
 
-            //playerGraphics.mapBorders = playerGraphics.GenerateMapBorders();
-            playerGraphics.DrawMapBorders();
+            graphics.DrawShipSelectionUI(player.CarrierMax, player.BattleshipMax, player.SubmarineMax, player.DestroyerMax);
 
-            //playerGraphics.shipMap = playerGraphics.GenerateShipMap();
-            playerGraphics.DrawShipMap();
-
-            playerGraphics.shipSelection = playerGraphics.GenerateShipSelection(engine.CarrierMax, engine.BattleshipMax, engine.SubmarineMax, engine.DestroyerMax);
-            playerGraphics.DrawShipSelection();
-
-            Console.SetCursorPosition(engine.XPosition, engine.YPosition);
-            Helpers.MoveCursor(engine.XPosition, engine.YPosition);
+            graphics.UpdateCursorPosition(player.XPosition, player.YPosition);
+            graphics.MoveCursor(player.XPosition, player.YPosition);
 
             //
             //Ship placement phase
@@ -58,31 +36,29 @@ namespace Battleships
 
             do
             {
-                playerGraphics.DrawShipMap();
-                playerGraphics.DrawShipSelection();
+                graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionY, player.Map.MapPositionX, player.Map.ShipMap);
+                graphics.DrawShipSelectionUI(player.CarrierMax, player.BattleshipMax, player.SubmarineMax, player.DestroyerMax);
 
-                Helpers.MoveCursor(engine.XPosition, engine.YPosition);
-                engine.StoreCursorPosition();
+                graphics.MoveCursor(player.XPosition, player.YPosition);
+                player.StoreCursorPosition();
 
-                engine.SelectShip();
+                player.SelectShip();
                 
-                engine.GetShipPlacement();
-                playerGraphics.shipSelection = playerGraphics.GenerateShipSelection(engine.CarrierMax, engine.BattleshipMax, engine.SubmarineMax, engine.DestroyerMax);
+                player.GetShipPlacement();
 
-                playerGraphics.DrawShipSelection();
-                playerGraphics.DrawShipMap();
-                playerGraphics.DrawShipPlacementFeedback(engine.ShipPlacementSelected, engine.ShipFrontPlaced);
+                graphics.DrawShipSelectionUI(player.CarrierMax, player.BattleshipMax, player.SubmarineMax, player.DestroyerMax);
+                graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionY, player.Map.MapPositionX, player.Map.ShipMap);
+                graphics.DrawShipPlacementFeedback(player.ShipPlacementSelected, player.ShipFrontPlaced);
 
-                Helpers.MoveCursor(engine.XPositionsStored[0], engine.YPositionsStored[0], "  ");
-                engine.GetEdgeOfMapDetection(engine.Map.MapBorders, playerGraphics.MapPositionX);                
+                graphics.MoveCursor(player.XPositionsStored[0], player.YPositionsStored[0]);
+                player.GetEdgeOfMapDetection(player.Map.MapBorders, player.Map.MapPositionX);                
 
-            } while (!engine.GetAllShipsPlaced());
+            } while (!player.GetAllShipsPlaced());
 
             //
             //AI generates map
             //           
 
-            //aiGraphic.shipMap = aiGraphic.GenerateShipMap();
             do
             {
                 do
@@ -100,21 +76,17 @@ namespace Battleships
             //Main game ui initialization
             //
 
-            Console.Clear();
+            graphics.GetInnitialConsoleEnviroment();
 
-            //aiGraphic.mapBorders = aiGraphic.GenerateMapBorders();
-            //aiGraphic.concealedShipMap = aiGraphic.GenerateShipMap();
-            //playerGraphics.concealedShipMap = playerGraphics.GenerateShipMap();
+            graphics.DrawMapBorders(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionX, player.Map.MapPositionY, player.Map.MapBorders);
+            graphics.DrawMapBorders(ai.Map.MapWidth, ai.Map.MapHeight, ai.Map.MapPositionX, ai.Map.MapPositionY, ai.Map.MapBorders);
+            graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionY, player.Map.MapPositionX, player.Map.ConcealedShipMap);
+            graphics.DrawShipMap(ai.Map.MapWidth, ai.Map.MapHeight, ai.Map.MapPositionY, ai.Map.MapPositionX, ai.Map.ConcealedShipMap);
 
-            playerGraphics.DrawMapBorders();
-            aiGraphic.DrawMapBorders();
-            playerGraphics.DrawShipMap(playerGraphics.concealedShipMap);
-            aiGraphic.DrawShipMap(aiGraphic.concealedShipMap);
-
-            engine.XPosition = aiGraphic.MapPositionX + 2;
-            engine.YPosition = aiGraphic.MapPositionY + 2;
-            Console.SetCursorPosition(aiGraphic.MapPositionX + 2, aiGraphic.MapPositionY + 2);
-            Helpers.MoveCursor(engine.XPosition, engine.YPosition, GameGraphics.cursor);
+            player.XPosition = ai.Map.MapPositionX + 2;
+            player.YPosition = ai.Map.MapPositionY + 2;
+            graphics.UpdateCursorPosition(ai.Map.MapPositionX + 2, ai.Map.MapPositionY + 2);
+            graphics.MoveCursor(player.XPosition, player.YPosition);
 
             //
             //Main game phase
@@ -128,28 +100,28 @@ namespace Battleships
 
                 do
                 {
-                    playerGraphics.DrawShipMap(playerGraphics.concealedShipMap);
-                    aiGraphic.DrawShipMap(aiGraphic.concealedShipMap);
+                    graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionX, player.Map.MapPositionY, player.Map.ConcealedShipMap);
+                    graphics.DrawShipMap(ai.Map.MapWidth, ai.Map.MapHeight, ai.Map.MapPositionX, ai.Map.MapPositionY, ai.Map.ConcealedShipMap);
 
-                    Helpers.MoveCursor(engine.XPosition, engine.YPosition);
-                    engine.StoreCursorPosition();
+                    graphics.MoveCursor(player.XPosition, player.YPosition);
+                    player.StoreCursorPosition();
 
-                    engine.GetShot();
+                    player.GetShot();
 
-                    if (engine.SpacebarPressed)
+                    if (player.SpacebarPressed)
                     {
-                        if (engine.GetValidShot(ai.Map.ConcealedShipMap, aiGraphic.MapPositionX))
+                        if (player.GetValidShot(ai.Map.ConcealedShipMap, ai.Map.MapPositionX))
                         {
-                            ai.Map.ConcealedShipMap = engine.Shoot(ai.Map.ShipMap, ai.Map.ConcealedShipMap, aiGraphic.MapPositionX);
-                            engine.PlayerDoneShooting = true;
+                            ai.Map.ConcealedShipMap = player.Shoot(ai.Map.ShipMap, ai.Map.ConcealedShipMap, ai.Map.MapPositionX);
+                            player.PlayerDoneShooting = true;
                         }
                     }
-                    engine.GetEdgeOfMapDetection(engine.Map.MapBorders, aiGraphic.MapPositionX);
-                    Helpers.MoveCursor(engine.XPosition, engine.YPosition, "  ");
+                    player.GetEdgeOfMapDetection(player.Map.MapBorders, ai.Map.MapPositionX);
+                    graphics.MoveCursor(player.XPosition, player.YPosition);
 
-                } while (!engine.PlayerDoneShooting);
+                } while (!player.PlayerDoneShooting);
 
-                engine.PlayerDoneShooting = false;
+                player.PlayerDoneShooting = false;
 
                 //
                 //Ai Turn
@@ -158,20 +130,21 @@ namespace Battleships
                 do
                 {
                     ai.GetShot();                    
-                } while (!ai.GetValidShot(engine.Map.ConcealedShipMap, playerGraphics.MapPositionX));
+                } while (!ai.GetValidShot(player.Map.ConcealedShipMap, player.Map.MapPositionX));
                 ai.ShotCounter = 0;
 
-                engine.Map.ConcealedShipMap = ai.Shoot(engine.Map.ShipMap, engine.Map.ConcealedShipMap, playerGraphics.MapPositionX);
+                player.Map.ConcealedShipMap = ai.Shoot(player.Map.ShipMap, player.Map.ConcealedShipMap, player.Map.MapPositionX);
 
-                playerGraphics.DrawShipMap(playerGraphics.concealedShipMap);
+                graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionX, player.Map.MapPositionY, player.Map.ConcealedShipMap);
 
                 //
                 //Win detection
                 //
 
-                engine.Win = engine.GetWin(ai.Map.ConcealedShipMap);
+                player.Win = player.GetWin(ai.Map.ConcealedShipMap);
+                ai.Win = ai.GetWin(player.Map.ConcealedShipMap);
 
-            } while (!engine.Win);
+            } while (!player.Win && !ai.Win);
 
             Console.WriteLine("You won!");
             Console.ReadKey();

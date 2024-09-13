@@ -71,37 +71,35 @@ namespace Battleships
                 case ConsoleKey.D1:
                     if (CarrierMax > 0)
                     {
-                        SelectedShipLength = (int)IShipCaptain.Ship.Carrier;
+                        SelectedShipLength = (int)UserInterface.ShipMapGraphics.Carrier;
                         ShipPlacementSelected = true;
                     }
                     break;
                 case ConsoleKey.D2:
                     if (BattleshipMax > 0)
                     {
-                        SelectedShipLength = (int)IShipCaptain.Ship.Battleship;
+                        SelectedShipLength = (int)UserInterface.ShipMapGraphics.Battleship;
                         ShipPlacementSelected = true;
                     }
                     break;
                 case ConsoleKey.D3:
                     if (SubmarineMax > 0)
                     {
-                        SelectedShipLength = (int)IShipCaptain.Ship.Submarine;
+                        SelectedShipLength = (int)UserInterface.ShipMapGraphics.Submarine;
                         ShipPlacementSelected = true;
                     }
                     break;
                 case ConsoleKey.D4:
                     if (DestroyerMax > 0)
                     {
-                        SelectedShipLength = (int)IShipCaptain.Ship.Destroyer;
+                        SelectedShipLength = (int)UserInterface.ShipMapGraphics.Destroyer;
                         ShipPlacementSelected = true;
                     }
                     break;
                 case ConsoleKey.Spacebar:
                     SpacebarPressed = true;
                     break;
-
             }
-
         }
         public void GetShipPlacement()
         {

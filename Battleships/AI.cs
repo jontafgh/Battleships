@@ -271,25 +271,25 @@ namespace Battleships
             }
             switch (SelectedShipLength)
             {
-                case (int)IShipCaptain.Ship.Destroyer:
+                case (int)UserInterface.ShipMapGraphics.Destroyer:
                     if (DestroyerMax > 0)
                     {
                         DestroyerMax--;
                     }
                     break;
-                case (int)IShipCaptain.Ship.Submarine:
+                case (int)UserInterface.ShipMapGraphics.Submarine:
                     if (SubmarineMax > 0)
                     {
                         SubmarineMax--;
                     }
                     break;
-                case (int)IShipCaptain.Ship.Battleship:
+                case (int)UserInterface.ShipMapGraphics.Battleship:
                     if (BattleshipMax > 0)
                     {
                         BattleshipMax--;
                     }
                     break;
-                case (int)IShipCaptain.Ship.Carrier:
+                case (int)UserInterface.ShipMapGraphics.Carrier:
                     if (CarrierMax > 0)
                     {
                         CarrierMax--;
