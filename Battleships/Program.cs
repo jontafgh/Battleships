@@ -163,7 +163,7 @@ namespace Battleships
                 {
                     ai.GetShot();                    
                 } while (!ai.GetValidShot(playerGraphics.concealedShipMap, playerGraphics.MapPositionX));
-                ai.shotCounter = 0;
+                ai.ShotCounter = 0;
 
                 playerGraphics.MarkShotOnMap(ai.XPosition, ai.YPosition, playerGraphics.MapPositionX, aiGraphic.MapCheckOffsetConsideration);
 

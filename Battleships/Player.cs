@@ -16,10 +16,6 @@ namespace Battleships
         public int SubmarineMax { get; }
         public int BattleshipMax { get; }
         public int CarrierMax { get; }
-        //public int DestroyerLength { get; }
-        //public int SubmarineLength { get; }
-        //public int BattleshipLength { get; }
-        //public int CarrierLength { get; }
         public int SelectedShipLength { get; }
         public enum Ship
         {
@@ -46,17 +42,11 @@ namespace Battleships
         public int SubmarineMax { get; set; }
         public int BattleshipMax { get; set; }
         public int CarrierMax { get; set; }
-        //public int DestroyerLength { get; protected set; }
-        //public int SubmarineLength { get; protected set; }
-        //public int BattleshipLength { get; protected set; }
-        //public int CarrierLength { get; protected set; }
         public int SelectedShipLength { get; set; }
 
         public bool SpacebarPressed { get; set; }
         public bool ShipFrontPlaced { get; set; }
         public bool ShipPlacementSelected { get; set; }
-        //public bool AllShipsPlaced { get; set; }
-        //public bool ValidShot { get; set; }
         public bool Win { get; set; }
         public bool PlayerDoneShooting { get; set; }
         public Player()
@@ -69,16 +59,10 @@ namespace Battleships
             SubmarineMax = 3;
             BattleshipMax = 2;
             CarrierMax = 1;
-            //DestroyerLength = 2;
-            //SubmarineLength = 3;
-            //BattleshipLength = 4;
-            //CarrierLength = 5;
             SelectedShipLength = 0;
             SpacebarPressed = false;
             ShipFrontPlaced = false;
             ShipPlacementSelected = false;
-            //AllShipsPlaced = false;
-            //ValidShot = false;
             Win = false;
             PlayerDoneShooting = false;
         }
