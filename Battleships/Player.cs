@@ -21,10 +21,12 @@ namespace Battleships
         {
             Destroyer = 2, Submarine = 3, Battleship = 4, Carrier = 5
         }
+        public void SelectShip();
         public void GetShipPlacement(string[,] shipMap);
         public bool GetValidShipPlacement(string[,] shipMap);
         public string[,] PlaceShip(string[,] shipMap);        
         public bool GetAllShipsPlaced();
+        public void GetShot();
         public bool GetValidShot(string[,] shipMap, int MapPositionX);
         public bool GetWin(string[,] concealedShipMap);
     }
@@ -65,6 +67,63 @@ namespace Battleships
             ShipPlacementSelected = false;
             Win = false;
             PlayerDoneShooting = false;
+        }
+        public void SelectShip()
+        {
+            SpacebarPressed = false;
+            ConsoleKeyInfo consoleKey = Console.ReadKey(true);
+            switch (consoleKey.Key)
+            {
+                case ConsoleKey.UpArrow:
+                    YPosition--;
+                    Console.SetCursorPosition(XPosition, YPosition);
+                    break;
+                case ConsoleKey.DownArrow:
+                    YPosition++;
+                    Console.SetCursorPosition(XPosition, YPosition);
+                    break;
+                case ConsoleKey.LeftArrow:
+                    XPosition--;
+                    Console.SetCursorPosition(XPosition, YPosition);
+                    break;
+                case ConsoleKey.RightArrow:
+                    XPosition++;
+                    Console.SetCursorPosition(XPosition, YPosition);
+                    break;
+                case ConsoleKey.D1:
+                    if (CarrierMax > 0)
+                    {
+                        SelectedShipLength = (int)IShipCaptain.Ship.Carrier;
+                        ShipPlacementSelected = true;
+                    }
+                    break;
+                case ConsoleKey.D2:
+                    if (BattleshipMax > 0)
+                    {
+                        SelectedShipLength = (int)IShipCaptain.Ship.Battleship;
+                        ShipPlacementSelected = true;
+                    }
+                    break;
+                case ConsoleKey.D3:
+                    if (SubmarineMax > 0)
+                    {
+                        SelectedShipLength = (int)IShipCaptain.Ship.Submarine;
+                        ShipPlacementSelected = true;
+                    }
+                    break;
+                case ConsoleKey.D4:
+                    if (DestroyerMax > 0)
+                    {
+                        SelectedShipLength = (int)IShipCaptain.Ship.Destroyer;
+                        ShipPlacementSelected = true;
+                    }
+                    break;
+                case ConsoleKey.Spacebar:
+                    SpacebarPressed = true;
+                    break;
+
+            }
+
         }
         public void GetShipPlacement(string[,] shipMap)
         {
@@ -275,6 +334,34 @@ namespace Battleships
                 return false;
             }
         }
+        public void GetShot()
+        {
+            SpacebarPressed = false;
+            ConsoleKeyInfo consoleKey = Console.ReadKey(true);
+            switch (consoleKey.Key)
+            {
+                case ConsoleKey.UpArrow:
+                    YPosition--;
+                    Console.SetCursorPosition(XPosition, YPosition);
+                    break;
+                case ConsoleKey.DownArrow:
+                    YPosition++;
+                    Console.SetCursorPosition(XPosition, YPosition);
+                    break;
+                case ConsoleKey.LeftArrow:
+                    XPosition--;
+                    Console.SetCursorPosition(XPosition, YPosition);
+                    break;
+                case ConsoleKey.RightArrow:
+                    XPosition++;
+                    Console.SetCursorPosition(XPosition, YPosition);
+                    break;
+                case ConsoleKey.Spacebar:
+                    SpacebarPressed = true;
+                    break;
+
+            }
+        }
         public bool GetValidShot(string[,] shipMap, int MapPositionX)
         {
             if ((XPosition - MapPositionX - 1) > (shipMap.GetLength(0) - 1) || (XPosition - MapPositionX - 1) < 0 || YPosition - 1 > (shipMap.GetLength(0) - 1) || YPosition - 1 < 0)
@@ -320,60 +407,6 @@ namespace Battleships
         {
             XPositionStored = XPosition;
             YPositionStored = YPosition;
-        }
-        public bool GetKeyPress(ConsoleKeyInfo consoleKey)
-        {
-            switch (consoleKey.Key)
-            {
-                case ConsoleKey.UpArrow:
-                    YPosition--;
-                    Console.SetCursorPosition(XPosition, YPosition);
-                    break;
-                case ConsoleKey.DownArrow:
-                    YPosition++;
-                    Console.SetCursorPosition(XPosition, YPosition);
-                    break;
-                case ConsoleKey.LeftArrow:
-                    XPosition--;
-                    Console.SetCursorPosition(XPosition, YPosition);
-                    break;
-                case ConsoleKey.RightArrow:
-                    XPosition++;
-                    Console.SetCursorPosition(XPosition, YPosition);
-                    break;
-                case ConsoleKey.D1:
-                    if (CarrierMax > 0)
-                    {
-                        SelectedShipLength = (int)IShipCaptain.Ship.Carrier;
-                        ShipPlacementSelected = true;
-                    }
-                    break;
-                case ConsoleKey.D2:
-                    if (BattleshipMax > 0)
-                    {
-                        SelectedShipLength = (int)IShipCaptain.Ship.Battleship;
-                        ShipPlacementSelected = true;
-                    }
-                    break;
-                case ConsoleKey.D3:
-                    if (SubmarineMax > 0)
-                    {
-                        SelectedShipLength = (int)IShipCaptain.Ship.Submarine;
-                        ShipPlacementSelected = true;
-                    }
-                    break;
-                case ConsoleKey.D4:
-                    if (DestroyerMax > 0)
-                    {
-                        SelectedShipLength = (int)IShipCaptain.Ship.Destroyer;
-                        ShipPlacementSelected = true;
-                    }
-                    break;
-                case ConsoleKey.Spacebar:
-                    return true;
-
-            }
-            return false;
         }
         public void GetEdgeOfMapDetection(char[,] mapBorders, int MapPositionX)
         {

@@ -19,7 +19,7 @@ namespace Battleships
         public int SelectedShipLength { get; set; }
 
 
-        public bool ValidShipSelection { get; set; }
+       
         public int[] StoredHitsX { get; set; }
         public int[] StoredHitsY { get; set; }
         public int ShotCounter { get; set; }
@@ -32,11 +32,63 @@ namespace Battleships
             BattleshipMax = 2;
             CarrierMax = 1;
             SelectedShipLength = 0;
-            ValidShipSelection = false;
+            
             StoredHitsX = new int[5];
             StoredHitsY = new int[5];
             ShotCounter = 0;
             HitCounter = 0;
+        }
+        public void SelectShip()
+        {
+            bool ValidShipSelection = false;
+            do
+            {
+                SelectedShipLength = Random.Next(2, 6);
+
+                switch (SelectedShipLength)
+                {
+                    case 2:
+                        if (DestroyerMax == 0)
+                        {
+                            ValidShipSelection = false;
+                        }
+                        else
+                        {
+                            ValidShipSelection = true;
+                        }
+                        break;
+                    case 3:
+                        if (SubmarineMax == 0)
+                        {
+                            ValidShipSelection = false;
+                        }
+                        else
+                        {
+                            ValidShipSelection = true;
+                        }
+                        break;
+                    case 4:
+                        if (BattleshipMax == 0)
+                        {
+                            ValidShipSelection = false;
+                        }
+                        else
+                        {
+                            ValidShipSelection = true;
+                        }
+                        break;
+                    case 5:
+                        if (CarrierMax == 0)
+                        {
+                            ValidShipSelection = false;
+                        }
+                        else
+                        {
+                            ValidShipSelection = true;
+                        }
+                        break;
+                }
+            } while (!ValidShipSelection);
         }
         public void GetShipPlacement(string[,] shipMap)
         {
@@ -229,6 +281,33 @@ namespace Battleships
                 return false;
             }
         }
+        public void GetShot()
+        {
+            if (ShotCounter == 4)
+            {
+                HitCounter = 0;
+                ShotCounter = 0;
+            }
+
+            switch (HitCounter)
+            {
+                case 0:
+                    XPosition = Random.Next(0, 10);
+                    YPosition = Random.Next(0, 10);
+                    break;
+                case 1:
+                    XPosition = GetShotAfterOneHitX();
+                    YPosition = GetShotAfterOneHitY();
+                    break;
+                case 2:
+                case 3:
+                case 4:
+                    XPosition = GetShotAfterTwoOrMoreHits(StoredHitsX, StoredHitsX[HitCounter - 1]);
+                    YPosition = GetShotAfterTwoOrMoreHits(StoredHitsY, StoredHitsY[HitCounter - 1]);
+                    break;
+            }
+            ShotCounter++;
+        }
         public bool GetValidShot(string[,] shipMap, int MapPositionX)
         {
             if ((XPosition - MapPositionX) > (shipMap.GetLength(0) - 1) || (XPosition - MapPositionX) < 0 || YPosition > (shipMap.GetLength(0) - 1) || YPosition < 0)
@@ -271,59 +350,6 @@ namespace Battleships
             return (hitCounter >= 30) ? true : false;
         }
 
-        public void SelectShip()
-        {
-
-            do
-            {
-                SelectedShipLength = Random.Next(2, 6);
-
-                switch (SelectedShipLength)
-                {
-                    case 2:
-                        if (DestroyerMax == 0)
-                        {
-                            ValidShipSelection = false;
-                        }
-                        else
-                        {
-                            ValidShipSelection = true;
-                        }
-                        break;
-                    case 3:
-                        if (SubmarineMax == 0)
-                        {
-                            ValidShipSelection = false;
-                        }
-                        else
-                        {
-                            ValidShipSelection = true;
-                        }
-                        break;
-                    case 4:
-                        if (BattleshipMax == 0)
-                        {
-                            ValidShipSelection = false;
-                        }
-                        else
-                        {
-                            ValidShipSelection = true;
-                        }
-                        break;
-                    case 5:
-                        if (CarrierMax == 0)
-                        {
-                            ValidShipSelection = false;
-                        }
-                        else
-                        {
-                            ValidShipSelection = true;
-                        }
-                        break;
-                }
-            } while (!ValidShipSelection);
-        }
-
         public int GetShotAfterOneHitX()
         {
             int fiftyFifty = Random.Next(0, 2);
@@ -356,33 +382,6 @@ namespace Battleships
             }
 
         }
-        public void GetShot()
-        {
-            if (ShotCounter == 4)
-            {
-                HitCounter = 0;
-                ShotCounter = 0;
-            }
-
-            switch (HitCounter)
-            {
-                case 0:
-                    XPosition = Random.Next(0, 10);
-                    YPosition = Random.Next(0, 10);
-                    break;
-                case 1:
-                    XPosition = GetShotAfterOneHitX();
-                    YPosition = GetShotAfterOneHitY();
-                    break;
-                case 2:
-                case 3:
-                case 4:
-                    XPosition = GetShotAfterTwoOrMoreHits(StoredHitsX, StoredHitsX[HitCounter - 1]);
-                    YPosition = GetShotAfterTwoOrMoreHits(StoredHitsY, StoredHitsY[HitCounter - 1]);
-                    break;
-            }
-            ShotCounter++;
-        }
         public void StoreShotHits()
         {
             StoredHitsX[HitCounter] = XPosition;
@@ -410,7 +409,6 @@ namespace Battleships
             }
             return false;
         }
-
         public void DecreaseShipsLeftToPlace()
         {
             switch (SelectedShipLength)
@@ -441,7 +439,6 @@ namespace Battleships
                     break;
             }
         }      
-        
         public void CheckForTypeOfShipHit(string[,] concealedShipMap)
         {
             switch (HitCounter)
