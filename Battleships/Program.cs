@@ -20,7 +20,7 @@ namespace Battleships
             Player engine = new Player();
             GameGraphics playerGraphics = new GameGraphics();
             GameGraphics aiGraphic = new GameGraphics();
-            GameAI ai = new GameAI();
+            AI ai = new AI();
 
             ConsoleKeyInfo consoleKey;
             Console.SetWindowSize(120, 40);
@@ -49,8 +49,8 @@ namespace Battleships
             playerGraphics.shipSelection = playerGraphics.GenerateShipSelection(engine.CarrierMax, engine.BattleshipMax, engine.SubmarineMax, engine.DestroyerMax);
             playerGraphics.DrawShipSelection();
 
-            Console.SetCursorPosition(engine.XCursor, engine.YCursor);
-            Helpers.MoveCursor(engine.XCursor, engine.YCursor);
+            Console.SetCursorPosition(engine.XPosition, engine.YPosition);
+            Helpers.MoveCursor(engine.XPosition, engine.YPosition);
 
             //
             //Ship placement phase
@@ -59,7 +59,7 @@ namespace Battleships
             do
             {
                 consoleKey = Console.ReadKey(true);
-                Helpers.MoveCursor(engine.XCursor, engine.YCursor, "  ");
+                Helpers.MoveCursor(engine.XPosition, engine.YPosition, "  ");
 
                 playerGraphics.DrawShipMap();
                 playerGraphics.DrawShipSelection();
@@ -75,7 +75,7 @@ namespace Battleships
                 playerGraphics.DrawShipPlacementFeedback(engine.ShipPlacementSelected, engine.ShipFrontPlaced);
 
                 engine.GetEdgeOfMapDetection(playerGraphics.mapBorders, playerGraphics.MapPositionX);
-                Helpers.MoveCursor(engine.XCursor, engine.YCursor);
+                Helpers.MoveCursor(engine.XPosition, engine.YPosition);
 
             } while (!engine.GetAllShipsPlaced());
 
@@ -89,11 +89,11 @@ namespace Battleships
                 do
                 {
                     ai.SelectShip();
-                    ai.PlaceShip();
+                    ai.GetShipPlacement(aiGraphic.shipMap);
 
-                } while (!ai.GetValidShipPlacement(aiGraphic.shipMap, aiGraphic.MapCheckOffsetConsideration));
+                } while (!ai.GetValidShipPlacement(aiGraphic.shipMap));
 
-                aiGraphic.shipMap = ai.PlaceShip(aiGraphic.shipMap, aiGraphic.MapCheckOffsetConsideration);
+                aiGraphic.shipMap = ai.PlaceShip(aiGraphic.shipMap);
 
                 ai.DecreaseShipsLeftToPlace();
 
@@ -114,10 +114,10 @@ namespace Battleships
             playerGraphics.DrawShipMap(playerGraphics.concealedShipMap);
             aiGraphic.DrawShipMap(aiGraphic.concealedShipMap);
 
-            engine.XCursor = aiGraphic.MapPositionX + 2;
-            engine.YCursor = aiGraphic.MapPositionY + 2;
+            engine.XPosition = aiGraphic.MapPositionX + 2;
+            engine.YPosition = aiGraphic.MapPositionY + 2;
             Console.SetCursorPosition(aiGraphic.MapPositionX + 2, aiGraphic.MapPositionY + 2);
-            Helpers.MoveCursor(engine.XCursor, engine.YCursor, GameGraphics.cursor);
+            Helpers.MoveCursor(engine.XPosition, engine.YPosition, GameGraphics.cursor);
 
             //
             //Main game phase
@@ -133,7 +133,7 @@ namespace Battleships
                 {
                     consoleKey = Console.ReadKey(true);
 
-                    Helpers.MoveCursor(engine.XCursor, engine.YCursor, "  ");
+                    Helpers.MoveCursor(engine.XPosition, engine.YPosition, "  ");
 
                     playerGraphics.DrawShipMap(playerGraphics.concealedShipMap);
                     aiGraphic.DrawShipMap(aiGraphic.concealedShipMap);
@@ -144,12 +144,12 @@ namespace Battleships
                     {
                         if (engine.GetValidShot(aiGraphic.concealedShipMap, aiGraphic.MapPositionX))
                         {
-                            aiGraphic.MarkShotOnMap(engine.XCursor, engine.YCursor, aiGraphic.MapPositionX, playerGraphics.MapCheckOffsetConsideration);
+                            aiGraphic.MarkShotOnMap(engine.XPosition, engine.YPosition, aiGraphic.MapPositionX, playerGraphics.MapCheckOffsetConsideration);
                             engine.PlayerDoneShooting = true;
                         }
                     }
                     engine.GetEdgeOfMapDetection(playerGraphics.mapBorders, aiGraphic.MapPositionX);
-                    Helpers.MoveCursor(engine.XCursor, engine.YCursor);
+                    Helpers.MoveCursor(engine.XPosition, engine.YPosition);
 
                 } while (!engine.PlayerDoneShooting);
 
@@ -162,10 +162,10 @@ namespace Battleships
                 do
                 {
                     ai.GetShot();                    
-                } while (!ai.GetValidShot(playerGraphics.concealedShipMap, aiGraphic.MapCheckOffsetConsideration, playerGraphics.MapPositionX));
+                } while (!ai.GetValidShot(playerGraphics.concealedShipMap, playerGraphics.MapPositionX));
                 ai.shotCounter = 0;
 
-                playerGraphics.MarkShotOnMap(ai.ShotX, ai.ShotY, playerGraphics.MapPositionX, aiGraphic.MapCheckOffsetConsideration);
+                playerGraphics.MarkShotOnMap(ai.XPosition, ai.YPosition, playerGraphics.MapPositionX, aiGraphic.MapCheckOffsetConsideration);
 
                 if (ai.GetShotHitOrNot(playerGraphics.shipMap))
                 {                    
