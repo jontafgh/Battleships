@@ -28,6 +28,7 @@ namespace Battleships
         public bool GetAllShipsPlaced();
         public void GetShot();
         public bool GetValidShot(string[,] shipMap, int MapPositionX);
+        public string[,] Shoot(string[,] shipMap, string[,] concealedShipMap, int MapPositionX);
         public bool GetWin(string[,] concealedShipMap);
     }
     public class Player : IShipCaptain
@@ -386,6 +387,42 @@ namespace Battleships
                 }
             }
             return true;
+        }
+        public string[,] Shoot(string[,] shipMap, string [,] concealedShipMap, int MapPositionX)
+        {
+            for (int i = 0; i < shipMap.GetLength(0); i++)
+            {
+                if (i == XPosition - 1 - MapPositionX)
+                {
+                    for (int j = 0; j < shipMap.GetLength(1); j++)
+                    {
+                        if (j == YPosition - 1)
+                        {
+                            if (shipMap[i, j] == GameGraphics.sea)
+                            {
+                                concealedShipMap[i, j] = GameGraphics.MissMarker;
+                            }
+                            else if (shipMap[i, j] == GameGraphics.destroyer)
+                            {
+                                concealedShipMap[i, j] = GameGraphics.hitDestroyer;
+                            }
+                            else if (shipMap[i, j] == GameGraphics.submarine)
+                            {
+                                concealedShipMap[i, j] = GameGraphics.hitSubmarine;
+                            }
+                            else if (shipMap[i, j] == GameGraphics.battleship)
+                            {
+                                concealedShipMap[i, j] = GameGraphics.hitBattleship;
+                            }
+                            else if (shipMap[i, j] == GameGraphics.carrier)
+                            {
+                                concealedShipMap[i, j] = GameGraphics.hitCarrier;
+                            }
+                        }
+                    }
+                }
+            }
+            return concealedShipMap;
         }
         public bool GetWin(string[,] concealedShipMap)
         {

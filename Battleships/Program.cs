@@ -146,7 +146,7 @@ namespace Battleships
                     {
                         if (engine.GetValidShot(aiGraphic.concealedShipMap, aiGraphic.MapPositionX))
                         {
-                            aiGraphic.MarkShotOnMap(engine.XPosition, engine.YPosition, aiGraphic.MapPositionX, playerGraphics.MapCheckOffsetConsideration);
+                            aiGraphic.concealedShipMap = engine.Shoot(aiGraphic.shipMap, aiGraphic.concealedShipMap, aiGraphic.MapPositionX);
                             engine.PlayerDoneShooting = true;
                         }
                     }
@@ -167,8 +167,7 @@ namespace Battleships
                 } while (!ai.GetValidShot(playerGraphics.concealedShipMap, playerGraphics.MapPositionX));
                 ai.ShotCounter = 0;
 
-                playerGraphics.MarkShotOnMap(ai.XPosition, ai.YPosition, playerGraphics.MapPositionX, aiGraphic.MapCheckOffsetConsideration);
-
+                playerGraphics.concealedShipMap = ai.Shoot(playerGraphics.shipMap, playerGraphics.concealedShipMap, playerGraphics.MapPositionX);
                 if (ai.GetShotHitOrNot(playerGraphics.shipMap))
                 {                    
                     ai.StoreShotHits();                    

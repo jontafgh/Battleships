@@ -189,42 +189,5 @@
             Helpers.Write(0, 21, "[1]Carrier    [2]Battleship [3]Submarine  [4]Destroyer");
             Helpers.Write(0, 23, "Place your ships, select by using numbers in brackets []");
         }
-        public void MarkShotOnMap(int x, int y, int MapPositionX, int MapCheckOffsetConsideration)
-        {
-            for (int i = 0; i < shipMap.GetLength(0); i++)
-            {
-                if (i == x + MapCheckOffsetConsideration - MapPositionX)
-                {
-                    for (int j = 0; j < shipMap.GetLength(1); j++)
-                    {
-                        if (j == y + MapCheckOffsetConsideration)
-                        {
-                            if (shipMap[i, j] == sea)
-                            {
-                                concealedShipMap[i, j] = MissMarker;
-                            }
-                            else if (shipMap[i, j] == destroyer)
-                            {
-                                concealedShipMap[i, j] = hitDestroyer;
-                            }
-                            else if (shipMap[i, j] == submarine)
-                            {
-                                concealedShipMap[i, j] = hitSubmarine;
-                            }
-                            else if (shipMap[i, j] == battleship)
-                            {
-                                concealedShipMap[i, j] = hitBattleship;
-                            }
-                            else if (shipMap[i, j] == carrier)
-                            {
-                                concealedShipMap[i, j] = hitCarrier;
-                            }
-                            
-                        }
-                    }
-                }
-            }
-            
-        }
     }
 }
