@@ -73,7 +73,7 @@ namespace Battleships
                 playerGraphics.DrawShipMap();
                 playerGraphics.DrawShipPlacementFeedback(engine.ShipPlacementSelected, engine.ShipFrontPlaced);
 
-                Helpers.MoveCursor(engine.XPositionStored, engine.YPositionStored, "  ");
+                Helpers.MoveCursor(engine.XPositionsStored[0], engine.YPositionsStored[0], "  ");
                 engine.GetEdgeOfMapDetection(playerGraphics.mapBorders, playerGraphics.MapPositionX);                
 
             } while (!engine.GetAllShipsPlaced());

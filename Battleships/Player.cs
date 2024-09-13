@@ -8,6 +8,8 @@ namespace Battleships
     {
         public int XPosition { get; }
         public int YPosition { get; }
+        public int[] XPositionsStored { get; set; }
+        public int[] YPositionsStored { get; set; }
         public int XPositionShipFront { get; }
         public int YPositionShipFront { get; }
         public int XPositionShipBack { get; }
@@ -17,6 +19,12 @@ namespace Battleships
         public int BattleshipMax { get; }
         public int CarrierMax { get; }
         public int SelectedShipLength { get; }
+        public bool SpacebarPressed { get; set; }
+        public bool ShipFrontPlaced { get; set; }
+        public bool ShipPlacementSelected { get; set; }
+        public int ShotCounter { get; set; }
+        public int HitCounter { get; set; }
+        public bool Win { get; set; }
         public enum Ship
         {
             Destroyer = 2, Submarine = 3, Battleship = 4, Carrier = 5
@@ -35,8 +43,8 @@ namespace Battleships
     {
         public int XPosition { get; set; }
         public int YPosition { get; set; }
-        public int XPositionStored { get; set; }
-        public int YPositionStored { get; set; }
+        public int[] XPositionsStored { get; set; }
+        public int[] YPositionsStored { get; set; }
         public int XPositionShipFront { get; set; }
         public int YPositionShipFront { get; set; }
         public int XPositionShipBack { get; set; }
@@ -46,18 +54,20 @@ namespace Battleships
         public int BattleshipMax { get; set; }
         public int CarrierMax { get; set; }
         public int SelectedShipLength { get; set; }
-
         public bool SpacebarPressed { get; set; }
         public bool ShipFrontPlaced { get; set; }
         public bool ShipPlacementSelected { get; set; }
+        public int ShotCounter { get; set; }
+        public int HitCounter { get; set; }
         public bool Win { get; set; }
+
         public bool PlayerDoneShooting { get; set; }
         public Player()
         {
             XPosition = 5;
             YPosition = 5;
-            XPositionStored = 5;
-            YPositionStored = 5;
+            XPositionsStored = new int[1];
+            YPositionsStored = new int[1];
             DestroyerMax = 4;
             SubmarineMax = 3;
             BattleshipMax = 2;
@@ -160,10 +170,7 @@ namespace Battleships
                                     CarrierMax--;
                                     break;
                             }
-                            //playerGraphics.shipSelection = playerGraphics.GenerateShipSelection(carrierMax, battleshipMax, submarineMax, destroyerMax);
-                            //playerGraphics.DrawShipSelection();
                         }
-                        //playerGraphics.DrawShipMap();
                         ShipFrontPlaced = false;
                         ShipPlacementSelected = false;
                     }
@@ -442,15 +449,15 @@ namespace Battleships
 
         public void StoreCursorPosition()
         {
-            XPositionStored = XPosition;
-            YPositionStored = YPosition;
+            XPositionsStored[0] = XPosition;
+            YPositionsStored[0] = YPosition;
         }
         public void GetEdgeOfMapDetection(char[,] mapBorders, int MapPositionX)
         {
             if (mapBorders[XPosition - MapPositionX, YPosition] == GameGraphics.wall)
             {
-                XPosition = XPositionStored;
-                YPosition = YPositionStored;
+                XPosition = XPositionsStored[0];
+                YPosition = YPositionsStored[0];
             }
         }
     }
