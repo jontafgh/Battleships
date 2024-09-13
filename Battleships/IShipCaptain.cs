@@ -27,14 +27,14 @@
             Destroyer = 2, Submarine = 3, Battleship = 4, Carrier = 5
         }
         public void SelectShip();
-        public void GetShipPlacement(string[,] shipMap);
-        public bool GetValidShipPlacement(string[,] shipMap);
-        public string[,] PlaceShip(string[,] shipMap);        
+        public void GetShipPlacement();
+        public bool GetValidShipPlacement();
+        public void PlaceShip();        
         public bool GetAllShipsPlaced();
         public void GetShot();
-        public bool GetValidShot(string[,] shipMap, int MapPositionX);
-        public string[,] Shoot(string[,] shipMap, string[,] concealedShipMap, int MapPositionX);
-        public bool GetWin(string[,] concealedShipMap);
+        public bool GetValidShot(int[,] shipMap, int MapPositionX);
+        public int[,] Shoot(int[,] shipMap, int[,] concealedShipMap, int MapPositionX);
+        public bool GetWin(int[,] concealedShipMap);
     }
 
 }

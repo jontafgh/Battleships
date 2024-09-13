@@ -24,6 +24,7 @@
         public string[,] shipMap;
         public string[,] concealedShipMap;
         public string[,] shipSelection;
+
         public void DrawShipPlacementFeedback(bool shipPlacementSelected, bool shipFrontPlaced)
         {
             if (shipPlacementSelected && !shipFrontPlaced)
@@ -38,41 +39,6 @@
             {
                 Helpers.Write(0, 25, "                                    ");
             }
-        }
-        public string[,] GenerateShipMap()
-        {
-            string[,] map = new string[mapWidth - 2, mapHeight - 2];
-
-            for (int i = 0; i < mapWidth - 2; i++)
-            {
-                for (int j = 0; j < mapHeight - 2; j++)
-                {
-                    map[i, j] = sea;
-                }
-            }
-            return map;
-        }
-        public char[,] GenerateMapBorders()
-        {
-            char[,] map = new char[mapWidth, mapHeight];
-
-            for (int i = 0; i < mapWidth; i++)
-            {
-                map[i, 0] = wall;
-            }
-            for (int i = 0; i < mapWidth; i++)
-            {
-                map[i, mapHeight - 1] = wall;
-            }
-            for (int i = 0; i < mapHeight; i++)
-            {
-                map[0, i] = wall;
-            }
-            for (int i = 0; i < mapHeight; i++)
-            {
-                map[mapWidth - 1, i] = wall;
-            }
-            return map;
         }
         public void DrawShipMap()
         {
@@ -105,7 +71,7 @@
                 }
             }
             Console.ForegroundColor = ConsoleColor.Gray;
-        }       
+        }
         public string[,] GenerateShipSelection(int carrierMax, int battleshipMax, int submarineMax, int destroyerMax)
         {
             int shipSelectionWidth = 25;
@@ -189,5 +155,58 @@
             Helpers.Write(0, 21, "[1]Carrier    [2]Battleship [3]Submarine  [4]Destroyer");
             Helpers.Write(0, 23, "Place your ships, select by using numbers in brackets []");
         }
+    }
+    public class Map
+    {
+        private int _mapWidth = 12;
+        private int _mapHeight = 12;
+        public int MapPositionX { get; private set; }
+        public int MapPositionY { get; private set; }        
+        public int[,] ShipMap { get; set; }
+        public int[,] ConcealedShipMap { get; set; }
+        public int[,] MapBorders { get; set; }
+        public Map(int mapPositionX, int mapPositionY)
+        {
+            MapPositionX = mapPositionX;
+            MapPositionY = mapPositionY;
+            ShipMap = new int[_mapWidth - 2, _mapHeight - 2];
+            ConcealedShipMap = new int[_mapWidth - 2, _mapHeight - 2];
+            for (int i = 0; i < _mapWidth - 2; i++)
+            {
+                for (int j = 0; j < _mapHeight - 2; j++)
+                {
+                    ShipMap[i, j] = (int)UserInterface.ShipMapGraphics.Sea;
+                    ConcealedShipMap[i, j] = (int)UserInterface.ShipMapGraphics.Sea;
+                }
+            }
+
+            MapBorders = new int[_mapWidth, _mapHeight];
+            for (int i = 0; i < _mapWidth; i++)
+            {
+                MapBorders[i, 0] = (int)UserInterface.ShipMapGraphics.Wall;
+            }
+            for (int i = 0; i < _mapWidth; i++)
+            {
+                MapBorders[i, _mapHeight - 1] = (int)UserInterface.ShipMapGraphics.Wall;
+            }
+            for (int i = 0; i < _mapHeight; i++)
+            {
+                MapBorders[0, i] = (int)UserInterface.ShipMapGraphics.Wall;
+            }
+            for (int i = 0; i < _mapHeight; i++)
+            {
+                MapBorders[_mapWidth - 1, i] = (int)UserInterface.ShipMapGraphics.Wall;
+            }
+        }
+    }
+    public interface UserInterface
+    {
+        public enum ShipMapGraphics
+        {
+            Sea = 0, MissMarker = 1, Wall = 10, Cursor = 11,
+            Destroyer = 2, Submarine = 3, Battleship = 4, Carrier = 5,
+            HitDestroyer = -2, HitSubmarine = -3, HitBattleship = -4, HitCarrier = -5
+        }
+        
     }
 }
