@@ -31,8 +31,7 @@ namespace Battleships
             SubmarineMax = 3;
             BattleshipMax = 2;
             CarrierMax = 1;
-            SelectedShipLength = 0;
-            
+            SelectedShipLength = 0;            
             StoredHitsX = new int[5];
             StoredHitsY = new int[5];
             ShotCounter = 0;
@@ -267,6 +266,33 @@ namespace Battleships
                     }
                 }
             }
+            switch (SelectedShipLength)
+            {
+                case (int)IShipCaptain.Ship.Destroyer:
+                    if (DestroyerMax > 0)
+                    {
+                        DestroyerMax--;
+                    }
+                    break;
+                case (int)IShipCaptain.Ship.Submarine:
+                    if (SubmarineMax > 0)
+                    {
+                        SubmarineMax--;
+                    }
+                    break;
+                case (int)IShipCaptain.Ship.Battleship:
+                    if (BattleshipMax > 0)
+                    {
+                        BattleshipMax--;
+                    }
+                    break;
+                case (int)IShipCaptain.Ship.Carrier:
+                    if (CarrierMax > 0)
+                    {
+                        CarrierMax--;
+                    }
+                    break;
+            }
             return shipMap;
 
         }
@@ -283,6 +309,8 @@ namespace Battleships
         }
         public void GetShot()
         {
+            int fiftyFifty = 0;
+
             if (ShotCounter == 4)
             {
                 HitCounter = 0;
@@ -296,14 +324,45 @@ namespace Battleships
                     YPosition = Random.Next(0, 10);
                     break;
                 case 1:
-                    XPosition = GetShotAfterOneHitX();
-                    YPosition = GetShotAfterOneHitY();
+                    fiftyFifty = Random.Next(0, 2);
+                    XPosition = (fiftyFifty == 1) ? Random.Next(StoredHitsX[0] - 1, StoredHitsX[0] + 2) : StoredHitsX[0];
+                    int direction = 0;
+                    do
+                    {
+                        direction = Random.Next(StoredHitsY[0] - 1, StoredHitsY[0] + 2);
+                    } while (direction == StoredHitsY[0]);
+                    YPosition = (XPosition == StoredHitsX[0]) ? direction : StoredHitsY[0];
                     break;
                 case 2:
                 case 3:
                 case 4:
-                    XPosition = GetShotAfterTwoOrMoreHits(StoredHitsX, StoredHitsX[HitCounter - 1]);
-                    YPosition = GetShotAfterTwoOrMoreHits(StoredHitsY, StoredHitsY[HitCounter - 1]);
+                    fiftyFifty = Random.Next(0, 2);
+                    if (StoredHitsX[HitCounter - 1] > StoredHitsX[0])
+                    {
+                        XPosition = (fiftyFifty == 1) ? StoredHitsX[HitCounter - 1] + 1 : StoredHitsX[HitCounter - 1] - HitCounter;
+                    }
+                    else if (StoredHitsX[HitCounter - 1] < StoredHitsX[0])
+                    {
+                        XPosition = (fiftyFifty == 1) ? StoredHitsX[HitCounter - 1] - 1 : StoredHitsX[HitCounter - 1] + HitCounter;
+                    }
+                    else
+                    {
+                        XPosition = StoredHitsX[HitCounter - 1];
+                    }
+
+                    fiftyFifty = Random.Next(0, 2);
+                    if (StoredHitsY[HitCounter - 1] > StoredHitsY[0])
+                    {
+                        YPosition = (fiftyFifty == 1) ? StoredHitsY[HitCounter - 1] + 1 : StoredHitsY[HitCounter - 1] - HitCounter;
+                    }
+                    else if (StoredHitsY[HitCounter - 1] < StoredHitsY[0])
+                    {
+                        XPosition = (fiftyFifty == 1) ? StoredHitsY[HitCounter - 1] - 1 : StoredHitsY[HitCounter - 1] + HitCounter;
+                    }
+                    else
+                    {
+                        XPosition = StoredHitsY[HitCounter - 1];
+                    }
                     break;
             }
             ShotCounter++;
@@ -336,13 +395,14 @@ namespace Battleships
         }
         public string[,] Shoot(string[,] shipMap, string[,] concealedShipMap, int MapPositionX)
         {
+            bool hit = false;
             for (int i = 0; i < shipMap.GetLength(0); i++)
             {
-                if (i == XPosition - 1 - MapPositionX)
+                if (i == XPosition - MapPositionX)
                 {
                     for (int j = 0; j < shipMap.GetLength(1); j++)
                     {
-                        if (j == YPosition - 1)
+                        if (j == YPosition)
                         {
                             if (shipMap[i, j] == GameGraphics.sea)
                             {
@@ -351,21 +411,80 @@ namespace Battleships
                             else if (shipMap[i, j] == GameGraphics.destroyer)
                             {
                                 concealedShipMap[i, j] = GameGraphics.hitDestroyer;
+                                hit = true;
                             }
                             else if (shipMap[i, j] == GameGraphics.submarine)
                             {
                                 concealedShipMap[i, j] = GameGraphics.hitSubmarine;
+                                hit = true;
                             }
                             else if (shipMap[i, j] == GameGraphics.battleship)
                             {
                                 concealedShipMap[i, j] = GameGraphics.hitBattleship;
+                                hit = true;
                             }
                             else if (shipMap[i, j] == GameGraphics.carrier)
                             {
                                 concealedShipMap[i, j] = GameGraphics.hitCarrier;
+                                hit = true;
                             }
                         }
                     }
+                }
+            }
+
+            if (hit)
+            {
+                StoredHitsX[HitCounter] = XPosition;
+                StoredHitsY[HitCounter] = YPosition;
+                HitCounter++;
+
+                switch (HitCounter)
+                {
+                    case 0:
+                    case 1:
+                        break;
+                    case 2:
+                        if (concealedShipMap[XPosition, YPosition] == GameGraphics.hitDestroyer && concealedShipMap[StoredHitsX[1], StoredHitsY[1]] == GameGraphics.hitDestroyer)
+                        {
+                            HitCounter = 0;
+                            StoredHitsX = new int[5];
+                            StoredHitsY = new int[5];
+                        }
+                        else if (concealedShipMap[XPosition, YPosition] != concealedShipMap[StoredHitsX[1], StoredHitsY[1]])
+                        {
+                            HitCounter--;
+                        }
+                        break;
+                    case 3:
+                        if (concealedShipMap[XPosition, YPosition] == GameGraphics.hitSubmarine && concealedShipMap[StoredHitsX[2], StoredHitsY[2]] == GameGraphics.hitSubmarine)
+                        {
+                            HitCounter = 0;
+                            StoredHitsX = new int[5];
+                            StoredHitsY = new int[5];
+                        }
+                        else if (concealedShipMap[XPosition, YPosition] != concealedShipMap[StoredHitsX[2], StoredHitsY[2]])
+                        {
+                            HitCounter--;
+                        }
+                        break;
+                    case 4:
+                        if (concealedShipMap[XPosition, YPosition] == GameGraphics.hitBattleship && concealedShipMap[StoredHitsX[3], StoredHitsY[3]] == GameGraphics.hitBattleship)
+                        {
+                            HitCounter = 0;
+                            StoredHitsX = new int[5];
+                            StoredHitsY = new int[5];
+                        }
+                        else if (concealedShipMap[XPosition, YPosition] != concealedShipMap[StoredHitsX[3], StoredHitsY[3]])
+                        {
+                            HitCounter--;
+                        }
+                        break;
+                    default:
+                        HitCounter = 0;
+                        StoredHitsX = new int[5];
+                        StoredHitsY = new int[5];
+                        break;
                 }
             }
             return concealedShipMap;
@@ -384,146 +503,6 @@ namespace Battleships
                 }
             }
             return (hitCounter >= 30) ? true : false;
-        }
-
-        public int GetShotAfterOneHitX()
-        {
-            int fiftyFifty = Random.Next(0, 2);
-            return (fiftyFifty == 1) ? Random.Next(StoredHitsX[0] - 1, StoredHitsX[0] + 2) : StoredHitsX[0];
-        }
-        public int GetShotAfterOneHitY()
-        {
-            int direction = 0;
-            do
-            {
-                direction = Random.Next(StoredHitsY[0] - 1, StoredHitsY[0] + 2);
-            } while (direction == StoredHitsY[0]);
-            return (XPosition == StoredHitsX[0]) ? direction : StoredHitsY[0];
-        }
-        public int GetShotAfterTwoOrMoreHits(int[] storedHits, int axis)
-        {
-            int fiftyFifty = Random.Next(0, 2);
-
-            if (storedHits[HitCounter - 1] > storedHits[0])
-            {
-                return (fiftyFifty == 1) ? axis + 1 : axis - HitCounter;
-            }
-            else if (storedHits[HitCounter - 1] < storedHits[0])
-            {
-                return (fiftyFifty == 1) ? axis - 1 : axis + HitCounter;
-            }
-            else
-            {
-                return axis;
-            }
-
-        }
-        public void StoreShotHits()
-        {
-            StoredHitsX[HitCounter] = XPosition;
-            StoredHitsY[HitCounter] = YPosition;
-            HitCounter++;
-
-        }
-        public bool GetShotHitOrNot(string[,] shipMap)
-        {
-            for (int i = 0; i < shipMap.GetLength(0); i++)
-            {
-                if (i == XPosition)
-                {
-                    for (int j = 0; j < shipMap.GetLength(1); j++)
-                    {
-                        if (j == YPosition)
-                        {
-                            if (shipMap[i, j] == GameGraphics.carrier || shipMap[i, j] == GameGraphics.battleship || shipMap[i, j] == GameGraphics.submarine || shipMap[i, j] == GameGraphics.destroyer)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-        public void DecreaseShipsLeftToPlace()
-        {
-            switch (SelectedShipLength)
-            {
-                case (int)IShipCaptain.Ship.Destroyer:
-                    if (DestroyerMax > 0)
-                    {
-                        DestroyerMax--;
-                    }
-                    break;
-                case (int)IShipCaptain.Ship.Submarine:
-                    if (SubmarineMax > 0)
-                    {
-                        SubmarineMax--;
-                    }
-                    break;
-                case (int)IShipCaptain.Ship.Battleship:
-                    if (BattleshipMax > 0)
-                    {
-                        BattleshipMax--;
-                    }
-                    break;
-                case (int)IShipCaptain.Ship.Carrier:
-                    if (CarrierMax > 0)
-                    {
-                        CarrierMax--;
-                    }
-                    break;
-            }
-        }      
-        public void CheckForTypeOfShipHit(string[,] concealedShipMap)
-        {
-            switch (HitCounter)
-            {
-                case 0:
-                case 1:
-                    break;
-                case 2:
-                    if (concealedShipMap[XPosition, YPosition] == GameGraphics.hitDestroyer && concealedShipMap[StoredHitsX[1], StoredHitsY[1]] == GameGraphics.hitDestroyer)
-                    {
-                        HitCounter = 0;
-                        StoredHitsX = new int[5];
-                        StoredHitsY = new int[5];
-                    }
-                    else if (concealedShipMap[XPosition, YPosition] != concealedShipMap[StoredHitsX[1], StoredHitsY[1]])
-                    {
-                        HitCounter--;
-                    }
-                    break;
-                case 3:
-                    if (concealedShipMap[XPosition, YPosition] == GameGraphics.hitSubmarine && concealedShipMap[StoredHitsX[2], StoredHitsY[2]] == GameGraphics.hitSubmarine)
-                    {
-                        HitCounter = 0;
-                        StoredHitsX = new int[5];
-                        StoredHitsY = new int[5];
-                    }
-                    else if (concealedShipMap[XPosition, YPosition] != concealedShipMap[StoredHitsX[2], StoredHitsY[2]])
-                    {
-                        HitCounter--;
-                    }
-                    break;
-                case 4:
-                    if (concealedShipMap[XPosition, YPosition] == GameGraphics.hitBattleship && concealedShipMap[StoredHitsX[3], StoredHitsY[3]] == GameGraphics.hitBattleship)
-                    {
-                        HitCounter = 0;
-                        StoredHitsX = new int[5];
-                        StoredHitsY = new int[5];
-                    }
-                    else if (concealedShipMap[XPosition, YPosition] != concealedShipMap[StoredHitsX[3], StoredHitsY[3]])
-                    {
-                        HitCounter--;
-                    }
-                    break;
-                default:
-                    HitCounter = 0;
-                    StoredHitsX = new int[5];
-                    StoredHitsY = new int[5];
-                    break;
-            }
         }
     }
 }
