@@ -26,6 +26,7 @@ namespace Battleships
             graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionY, player.Map.MapPositionX, player.Map.ShipMap);
 
             graphics.DrawShipSelectionUI(player.CarrierMax, player.BattleshipMax, player.SubmarineMax, player.DestroyerMax);
+            graphics.DrawShipPlacementFeedback(player.ShipPlacementSelected, player.ShipFrontPlaced);
 
             graphics.UpdateCursorPosition(player.XPosition, player.YPosition);
             graphics.MoveCursor(player.XPosition, player.YPosition);
@@ -50,7 +51,7 @@ namespace Battleships
                 graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionY, player.Map.MapPositionX, player.Map.ShipMap);
                 graphics.DrawShipPlacementFeedback(player.ShipPlacementSelected, player.ShipFrontPlaced);
 
-                graphics.MoveCursor(player.XPositionsStored[0], player.YPositionsStored[0]);
+                //graphics.MoveCursor(player.XPositionsStored[0], player.YPositionsStored[0]);
                 player.GetEdgeOfMapDetection(player.Map.MapBorders, player.Map.MapPositionX);                
 
             } while (!player.GetAllShipsPlaced());
@@ -100,6 +101,7 @@ namespace Battleships
 
                 do
                 {
+                    graphics.DrawPlayerShootingFeedback();
                     graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionX, player.Map.MapPositionY, player.Map.ShipMap);
                     graphics.DrawShipMap(ai.Map.MapWidth, ai.Map.MapHeight, ai.Map.MapPositionX, ai.Map.MapPositionY, ai.Map.ConcealedShipMap);
                     graphics.DrawShootingPhaseUI(player.Map.ShipMap, player.Map.PlacedDestroyers, player.Map.PlacedSubmarines, player.Map.PlacedBattleships, player.Map.PlacedCarriers, player.Map.MapPositionX, "Player");
@@ -129,12 +131,15 @@ namespace Battleships
                 //
                 //Ai Turn
                 //
-
+                
                 do
                 {
                     ai.GetShot();                    
                 } while (!ai.GetValidShot(player.Map.ConcealedShipMap, player.Map.MapPositionX));
                 ai.ShotCounter = 0;
+
+                graphics.RemoveCursor(player.XPosition, player.YPosition, ai.Map.ConcealedShipMap, ai.Map.MapPositionX);
+                graphics.DrawAiShootingFeedback(ai.XPosition, ai.YPosition, player.Map.ShipMap);
 
                 player.Map.ConcealedShipMap = ai.Shoot(player.Map.ShipMap, player.Map.ConcealedShipMap, player.Map.MapPositionX);
                 player.Map.UpdateShipMap();

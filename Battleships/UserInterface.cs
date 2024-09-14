@@ -38,21 +38,21 @@ namespace Battleships
             Graphics.Add((int)UserInterface.ShipMapGraphics.HitBattleship, HitBattleship);
             Graphics.Add((int)UserInterface.ShipMapGraphics.HitSubmarine, HitSubmarine);
             Graphics.Add((int)UserInterface.ShipMapGraphics.HitDestroyer, HitDestroyer);
-            Graphics.Add((int)UserInterface.ShipMapGraphics.MissMarker, MissMarker);        
+            Graphics.Add((int)UserInterface.ShipMapGraphics.MissMarker, MissMarker);
         }
         public void DrawShipPlacementFeedback(bool shipPlacementSelected, bool shipFrontPlaced)
         {
             if (shipPlacementSelected && !shipFrontPlaced)
             {
-                Write(0, 25, "Place the front by pressing Spacebar");
+                Write(0, 20, "Place the front by pressing Spacebar                                           ");
             }
             else if (shipPlacementSelected)
             {
-                Write(0, 25, "Place the back by pressing Spacebar ");
+                Write(0, 20, "Place the back by pressing Spacebar                                           ");
             }
             else
             {
-                Write(0, 25, "                                    ");
+                Write(0, 20, $"Select ship by pressing the number in the brackets []                        ");
             }
         }
         public void DrawShipMap(int mapWidth, int mapHeight, int MapPositionX, int MapPositionY, int[,] shipMap)
@@ -79,14 +79,15 @@ namespace Battleships
         }
         public void DrawShipSelectionUI(int carrierMax, int battleshipMax, int submarineMax, int destroyerMax)
         {
-            Write(0, 13, $"Place your ships, select by using numbers in brackets []                        ");
-            Write(0, 14, $"{carrierMax}/1                                                                  ");
-            Write(0, 15, $"{Graphics[(int)UserInterface.ShipMapGraphics.Carrier]}         {battleshipMax}/2                                             ");
-            Write(0, 16, $"{Graphics[(int)UserInterface.ShipMapGraphics.Carrier]}         {Graphics[(int)UserInterface.ShipMapGraphics.Battleship]}            {submarineMax}/3                      ");
-            Write(0, 17, $"{Graphics[(int)UserInterface.ShipMapGraphics.Carrier]}         {Graphics[(int)UserInterface.ShipMapGraphics.Battleship]}            {Graphics[(int)UserInterface.ShipMapGraphics.Submarine]}           {destroyerMax}/4");
-            Write(0, 18, $"{Graphics[(int)UserInterface.ShipMapGraphics.Carrier]}         {Graphics[(int)UserInterface.ShipMapGraphics.Battleship]}            {Graphics[(int)UserInterface.ShipMapGraphics.Submarine]}           {Graphics[(int)UserInterface.ShipMapGraphics.Destroyer]}     ");
-            Write(0, 19, $"{Graphics[(int)UserInterface.ShipMapGraphics.Carrier]}         {Graphics[(int)UserInterface.ShipMapGraphics.Battleship]}            {Graphics[(int)UserInterface.ShipMapGraphics.Submarine]}           {Graphics[(int)UserInterface.ShipMapGraphics.Destroyer]}     ");
-            Write(0, 20, $"[1]Carrier [2]Battleship [3]Submarine [4]Destroyer                              ");
+
+            Write(0, 12, $"{carrierMax}/1                                                                  ");
+            Write(0, 13, $"{Graphics[(int)UserInterface.ShipMapGraphics.Carrier]}         {battleshipMax}/2                                             ");
+            Write(0, 14, $"{Graphics[(int)UserInterface.ShipMapGraphics.Carrier]}         {Graphics[(int)UserInterface.ShipMapGraphics.Battleship]}            {submarineMax}/3                      ");
+            Write(0, 15, $"{Graphics[(int)UserInterface.ShipMapGraphics.Carrier]}         {Graphics[(int)UserInterface.ShipMapGraphics.Battleship]}            {Graphics[(int)UserInterface.ShipMapGraphics.Submarine]}           {destroyerMax}/4");
+            Write(0, 16, $"{Graphics[(int)UserInterface.ShipMapGraphics.Carrier]}         {Graphics[(int)UserInterface.ShipMapGraphics.Battleship]}            {Graphics[(int)UserInterface.ShipMapGraphics.Submarine]}           {Graphics[(int)UserInterface.ShipMapGraphics.Destroyer]}     ");
+            Write(0, 17, $"{Graphics[(int)UserInterface.ShipMapGraphics.Carrier]}         {Graphics[(int)UserInterface.ShipMapGraphics.Battleship]}            {Graphics[(int)UserInterface.ShipMapGraphics.Submarine]}           {Graphics[(int)UserInterface.ShipMapGraphics.Destroyer]}     ");
+            Write(0, 18, $"[1]Carrier [2]Battleship [3]Submarine [4]Destroyer                              ");
+            Write(0, 19, $"Place your ships:                        ");
         }
         public void Write(int x, int y, string charachter)
         {
@@ -98,6 +99,12 @@ namespace Battleships
         {
             Console.BackgroundColor = ConsoleColor.White;
             Write(XCursor, YCursor, Graphics[(int)UserInterface.ShipMapGraphics.Cursor]);
+            Console.BackgroundColor = ConsoleColor.Black;
+        }
+        public void RemoveCursor(int XCursor, int YCursor, int[,] shipMap, int mapPositionX)
+        {
+            Console.BackgroundColor = ConsoleColor.Black;
+            Write(XCursor, YCursor, Graphics[shipMap[XCursor - 1 - mapPositionX, YCursor - 1]]);
             Console.BackgroundColor = ConsoleColor.Black;
         }
         public void UpdateCursorPosition(int x, int y)
@@ -134,6 +141,40 @@ namespace Battleships
             Write(11 + mapPositionX, 15, $"{Graphics[concealedShipMap[placedCarriers[1].X[2], placedCarriers[1].Y[2]]]}");
             Write(11 + mapPositionX, 16, $"{Graphics[concealedShipMap[placedCarriers[1].X[3], placedCarriers[1].Y[3]]]}");
             Write(11 + mapPositionX, 17, $"{Graphics[concealedShipMap[placedCarriers[1].X[4], placedCarriers[1].Y[4]]]}");
+        }
+        public void DrawAiShootingFeedback(int x, int y, int[,] shipMap)
+        {
+            Random random = new Random();
+            string[] animation = ["/", "-", "\\", "|", "/", "-", "\\", "|"];
+            string[] animation2 = ["   ", ".  ", ".. ", "...", "   ", ".  ", ".. ", "..."];
+
+            Write(0, 19, "AI is lining up a shot!");
+            for (int i = 0; i < animation.Length; i++)
+            {
+                int x2 = 0;
+                int y2 = 0;
+                do
+                {
+                    x2 = random.Next(x , x + 3);
+                    y2 = random.Next(y , y + 3);
+                }while ((x2-1 < 0 || x2-1 > shipMap.GetLength(0) - 1) || (y2-1 < 0 || y2-1 > shipMap.GetLength(0) - 1));
+
+
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Write(x2 , y2,  "  ");
+                Thread.Sleep(random.Next(100, 500));
+                Console.BackgroundColor = ConsoleColor.Black;
+                Write(x2 , y2 , Graphics[shipMap[x2 - 1, y2 - 1]]);
+
+                Write(0, 20, animation[i] + animation2[i]);
+
+            }
+            Write(0, 19, "                       ");
+            Write(0, 20, "                       ");
+        }
+        public void DrawPlayerShootingFeedback()
+        {
+            Write(15, 19, "Shoot at enemy ships by pressing Spacebar");
         }
     }
 }
