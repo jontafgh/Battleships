@@ -193,15 +193,23 @@ namespace Battleships
                     {
                         case 2:
                             Map.ShipMap[XPositionShipFront, i] = (int)UserInterface.ShipMapGraphics.Destroyer;
+                            Map.PlacedDestroyers[DestroyerMax].X[i - YPositionShipFront] = (XPositionShipFront);
+                            Map.PlacedDestroyers[DestroyerMax].Y[i - YPositionShipFront] = (i);
                             break;
                         case 3:
                             Map.ShipMap[XPositionShipFront, i] = (int)UserInterface.ShipMapGraphics.Submarine;
+                            Map.PlacedSubmarines[SubmarineMax].X[i - YPositionShipFront] = (XPositionShipFront);
+                            Map.PlacedSubmarines[SubmarineMax].Y[i - YPositionShipFront] = (i);
                             break;
                         case 4:
                             Map.ShipMap[XPositionShipFront, i] = (int)UserInterface.ShipMapGraphics.Battleship;
+                            Map.PlacedBattleships[BattleshipMax].X[i - YPositionShipFront] = (XPositionShipFront);
+                            Map.PlacedBattleships[BattleshipMax].Y[i - YPositionShipFront] = (i);
                             break;
                         case 5:
                             Map.ShipMap[XPositionShipFront, i] = (int)UserInterface.ShipMapGraphics.Carrier;
+                            Map.PlacedCarriers[CarrierMax].X[i - YPositionShipFront] = (XPositionShipFront);
+                            Map.PlacedCarriers[CarrierMax].Y[i - YPositionShipFront] = (i);
                             break;
                     }
                 }
@@ -214,15 +222,23 @@ namespace Battleships
                     {
                         case 2:
                             Map.ShipMap[XPositionShipFront, i] = (int)UserInterface.ShipMapGraphics.Destroyer;
+                            Map.PlacedDestroyers[DestroyerMax].X[i - YPositionShipFront + 1] = (XPositionShipFront);
+                            Map.PlacedDestroyers[DestroyerMax].Y[i - YPositionShipFront + 1] = (i);
                             break;
                         case 3:
                             Map.ShipMap[XPositionShipFront, i] = (int)UserInterface.ShipMapGraphics.Submarine;
+                            Map.PlacedSubmarines[SubmarineMax].X[i - YPositionShipFront + 2] = (XPositionShipFront);
+                            Map.PlacedSubmarines[SubmarineMax].Y[i - YPositionShipFront + 2] = (i);
                             break;
                         case 4:
                             Map.ShipMap[XPositionShipFront, i] = (int)UserInterface.ShipMapGraphics.Battleship;
+                            Map.PlacedBattleships[BattleshipMax].X[i - YPositionShipFront + 3] = (XPositionShipFront);
+                            Map.PlacedBattleships[BattleshipMax].Y[i - YPositionShipFront + 3] = (i);
                             break;
                         case 5:
                             Map.ShipMap[XPositionShipFront, i] = (int)UserInterface.ShipMapGraphics.Carrier;
+                            Map.PlacedCarriers[CarrierMax].X[i - YPositionShipFront + 4] = (XPositionShipFront);
+                            Map.PlacedCarriers[CarrierMax].Y[i - YPositionShipFront + 4] = (i);
                             break;
                     }
                 }
@@ -235,15 +251,23 @@ namespace Battleships
                     {
                         case 2:
                             Map.ShipMap[i, YPositionShipFront] = (int)UserInterface.ShipMapGraphics.Destroyer;
+                            Map.PlacedDestroyers[DestroyerMax].X[i - XPositionShipFront] = (i);
+                            Map.PlacedDestroyers[DestroyerMax].Y[i - XPositionShipFront] = (YPositionShipFront);
                             break;
                         case 3:
                             Map.ShipMap[i, YPositionShipFront] = (int)UserInterface.ShipMapGraphics.Submarine;
+                            Map.PlacedSubmarines[SubmarineMax].X[i - XPositionShipFront] = (i);
+                            Map.PlacedSubmarines[SubmarineMax].Y[i - XPositionShipFront] = (YPositionShipFront);
                             break;
                         case 4:
                             Map.ShipMap[i, YPositionShipFront] = (int)UserInterface.ShipMapGraphics.Battleship;
+                            Map.PlacedBattleships[BattleshipMax].X[i - XPositionShipFront] = (i);
+                            Map.PlacedBattleships[BattleshipMax].Y[i - XPositionShipFront] = (YPositionShipFront);
                             break;
                         case 5:
                             Map.ShipMap[i, YPositionShipFront] = (int)UserInterface.ShipMapGraphics.Carrier;
+                            Map.PlacedCarriers[CarrierMax].X[i - XPositionShipFront] = (i);
+                            Map.PlacedCarriers[CarrierMax].Y[i - XPositionShipFront] = (YPositionShipFront);
                             break;
                     }
                 }
@@ -256,15 +280,23 @@ namespace Battleships
                     {
                         case 2:
                             Map.ShipMap[i, YPositionShipFront] = (int)UserInterface.ShipMapGraphics.Destroyer;
+                            Map.PlacedDestroyers[DestroyerMax].X[i - XPositionShipFront + 1] = (i);
+                            Map.PlacedDestroyers[DestroyerMax].Y[i - XPositionShipFront + 1] = (YPositionShipFront);
                             break;
                         case 3:
                             Map.ShipMap[i, YPositionShipFront] = (int)UserInterface.ShipMapGraphics.Submarine;
+                            Map.PlacedSubmarines[SubmarineMax].X[i - XPositionShipFront + 2] = (i);
+                            Map.PlacedSubmarines[SubmarineMax].Y[i - XPositionShipFront + 2] = (YPositionShipFront);
                             break;
                         case 4:
                             Map.ShipMap[i, YPositionShipFront] = (int)UserInterface.ShipMapGraphics.Battleship;
+                            Map.PlacedBattleships[BattleshipMax].X[i - XPositionShipFront + 3] = (i);
+                            Map.PlacedBattleships[BattleshipMax].Y[i - XPositionShipFront + 3] = (YPositionShipFront);
                             break;
                         case 5:
                             Map.ShipMap[i, YPositionShipFront] = (int)UserInterface.ShipMapGraphics.Carrier;
+                            Map.PlacedCarriers[CarrierMax].X[i - XPositionShipFront + 4] = (i);
+                            Map.PlacedCarriers[CarrierMax].Y[i - XPositionShipFront + 4] = (YPositionShipFront);
                             break;
                     }
                 }

@@ -17,7 +17,7 @@ namespace Battleships
 
             Player player = new Player();
             AI ai = new AI();
-            UserInterface graphics = new UserInterface();
+            UserInterface graphics = new UserInterface();            
 
             graphics.GetInnitialConsoleEnviroment();
 
@@ -80,7 +80,7 @@ namespace Battleships
 
             graphics.DrawMapBorders(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionX, player.Map.MapPositionY, player.Map.MapBorders);
             graphics.DrawMapBorders(ai.Map.MapWidth, ai.Map.MapHeight, ai.Map.MapPositionX, ai.Map.MapPositionY, ai.Map.MapBorders);
-            graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionY, player.Map.MapPositionX, player.Map.ConcealedShipMap);
+            graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionY, player.Map.MapPositionX, player.Map.ShipMap);
             graphics.DrawShipMap(ai.Map.MapWidth, ai.Map.MapHeight, ai.Map.MapPositionY, ai.Map.MapPositionX, ai.Map.ConcealedShipMap);
 
             player.XPosition = ai.Map.MapPositionX + 2;
@@ -100,8 +100,10 @@ namespace Battleships
 
                 do
                 {
-                    graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionX, player.Map.MapPositionY, player.Map.ConcealedShipMap);
+                    graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionX, player.Map.MapPositionY, player.Map.ShipMap);
                     graphics.DrawShipMap(ai.Map.MapWidth, ai.Map.MapHeight, ai.Map.MapPositionX, ai.Map.MapPositionY, ai.Map.ConcealedShipMap);
+                    graphics.DrawShootingPhaseUI(player.Map.ShipMap, player.Map.PlacedDestroyers, player.Map.PlacedSubmarines, player.Map.PlacedBattleships, player.Map.PlacedCarriers, player.Map.MapPositionX, "Player");
+                    graphics.DrawShootingPhaseUI(ai.Map.ShipMap, ai.Map.PlacedDestroyers, ai.Map.PlacedSubmarines, ai.Map.PlacedBattleships, ai.Map.PlacedCarriers, ai.Map.MapPositionX, "AI");
 
                     graphics.MoveCursor(player.XPosition, player.YPosition);
                     player.StoreCursorPosition();
@@ -113,6 +115,7 @@ namespace Battleships
                         if (player.GetValidShot(ai.Map.ConcealedShipMap, ai.Map.MapPositionX))
                         {
                             ai.Map.ConcealedShipMap = player.Shoot(ai.Map.ShipMap, ai.Map.ConcealedShipMap, ai.Map.MapPositionX);
+                            ai.Map.UpdateShipMap();
                             player.PlayerDoneShooting = true;
                         }
                     }
@@ -134,7 +137,7 @@ namespace Battleships
                 ai.ShotCounter = 0;
 
                 player.Map.ConcealedShipMap = ai.Shoot(player.Map.ShipMap, player.Map.ConcealedShipMap, player.Map.MapPositionX);
-
+                player.Map.UpdateShipMap();
                 graphics.DrawShipMap(player.Map.MapWidth, player.Map.MapHeight, player.Map.MapPositionX, player.Map.MapPositionY, player.Map.ConcealedShipMap);
 
                 //

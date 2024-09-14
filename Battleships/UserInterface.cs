@@ -111,5 +111,29 @@ namespace Battleships
             Console.Clear();
             Console.CursorVisible = false;
         }
+        public void DrawShootingPhaseUI(int[,] concealedShipMap, Dictionary<int, ShipPartXY> placedDestroyers, Dictionary<int, ShipPartXY> placedSubmarines, Dictionary<int, ShipPartXY> placedBattleships, Dictionary<int, ShipPartXY> placedCarriers, int mapPositionX, string player)
+        {
+            Write(0 + mapPositionX, 12, $"{player} Ship Status:");
+            Write(0 + mapPositionX, 13, $"{Graphics[concealedShipMap[placedDestroyers[1].X[0], placedDestroyers[1].Y[0]]]} {Graphics[concealedShipMap[placedDestroyers[3].X[0], placedDestroyers[3].Y[0]]]}");
+            Write(0 + mapPositionX, 14, $"{Graphics[concealedShipMap[placedDestroyers[1].X[1], placedDestroyers[1].Y[1]]]} {Graphics[concealedShipMap[placedDestroyers[3].X[1], placedDestroyers[3].Y[1]]]}");
+            Write(0 + mapPositionX, 15, $"");
+            Write(0 + mapPositionX, 16, $"{Graphics[concealedShipMap[placedDestroyers[2].X[0], placedDestroyers[2].Y[0]]]} {Graphics[concealedShipMap[placedDestroyers[4].X[0], placedDestroyers[4].Y[0]]]}");
+            Write(0 + mapPositionX, 17, $"{Graphics[concealedShipMap[placedDestroyers[2].X[1], placedDestroyers[2].Y[1]]]} {Graphics[concealedShipMap[placedDestroyers[4].X[1], placedDestroyers[4].Y[1]]]}");
+
+            Write(3 + mapPositionX, 15, $"{Graphics[concealedShipMap[placedSubmarines[1].X[0], placedSubmarines[1].Y[0]]]} {Graphics[concealedShipMap[placedSubmarines[2].X[0], placedSubmarines[2].Y[0]]]} {Graphics[concealedShipMap[placedSubmarines[3].X[0], placedSubmarines[3].Y[0]]]}");
+            Write(3 + mapPositionX, 16, $"{Graphics[concealedShipMap[placedSubmarines[1].X[1], placedSubmarines[1].Y[1]]]} {Graphics[concealedShipMap[placedSubmarines[2].X[1], placedSubmarines[2].Y[1]]]} {Graphics[concealedShipMap[placedSubmarines[3].X[1], placedSubmarines[3].Y[1]]]}");
+            Write(3 + mapPositionX, 17, $"{Graphics[concealedShipMap[placedSubmarines[1].X[2], placedSubmarines[1].Y[2]]]} {Graphics[concealedShipMap[placedSubmarines[2].X[2], placedSubmarines[2].Y[2]]]} {Graphics[concealedShipMap[placedSubmarines[3].X[2], placedSubmarines[3].Y[2]]]}");
+
+            Write(8 + mapPositionX, 14, $"{Graphics[concealedShipMap[placedBattleships[1].X[0], placedBattleships[1].Y[0]]]} {Graphics[concealedShipMap[placedBattleships[2].X[0], placedBattleships[2].Y[0]]]}");
+            Write(8 + mapPositionX, 15, $"{Graphics[concealedShipMap[placedBattleships[1].X[1], placedBattleships[1].Y[1]]]} {Graphics[concealedShipMap[placedBattleships[2].X[1], placedBattleships[2].Y[1]]]}");
+            Write(8 + mapPositionX, 16, $"{Graphics[concealedShipMap[placedBattleships[1].X[2], placedBattleships[1].Y[2]]]} {Graphics[concealedShipMap[placedBattleships[2].X[2], placedBattleships[2].Y[2]]]}");
+            Write(8 + mapPositionX, 17, $"{Graphics[concealedShipMap[placedBattleships[1].X[3], placedBattleships[1].Y[3]]]} {Graphics[concealedShipMap[placedBattleships[2].X[3], placedBattleships[2].Y[3]]]}");
+
+            Write(11 + mapPositionX, 13, $"{Graphics[concealedShipMap[placedCarriers[1].X[0], placedCarriers[1].Y[0]]]}");
+            Write(11 + mapPositionX, 14, $"{Graphics[concealedShipMap[placedCarriers[1].X[1], placedCarriers[1].Y[1]]]}");
+            Write(11 + mapPositionX, 15, $"{Graphics[concealedShipMap[placedCarriers[1].X[2], placedCarriers[1].Y[2]]]}");
+            Write(11 + mapPositionX, 16, $"{Graphics[concealedShipMap[placedCarriers[1].X[3], placedCarriers[1].Y[3]]]}");
+            Write(11 + mapPositionX, 17, $"{Graphics[concealedShipMap[placedCarriers[1].X[4], placedCarriers[1].Y[4]]]}");
+        }
     }
 }
