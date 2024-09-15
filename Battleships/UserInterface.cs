@@ -147,7 +147,7 @@ namespace Battleships
             Random random = new Random();
             string[] animation = ["/", "-", "\\", "|", "/", "-", "\\", "|"];
             string[] animation2 = ["   ", ".  ", ".. ", "...", "   ", ".  ", ".. ", "..."];
-
+            Write(0, 19, "                                                                                         ");
             Write(0, 19, "AI is lining up a shot!");
             for (int i = 0; i < animation.Length; i++)
             {
@@ -174,7 +174,22 @@ namespace Battleships
         }
         public void DrawPlayerShootingFeedback()
         {
-            Write(15, 19, "Shoot at enemy ships by pressing Spacebar");
+            Write(0, 19, "Shoot at enemy ships by pressing Spacebar");
+        }
+        public void DrawWinFeedback(bool winPlayer, bool winAI)
+        {
+            Write(0, 19, "                                                                                         ");
+
+            if (winPlayer)
+            {
+                Write(0, 19, "Congratulations, you've won!");
+            }
+            if (winAI)
+            {
+                Write(0, 19, "AI wins!");
+            }
+            Write(0, 20, "Press any key to exit.");
+            Console.ReadKey();
         }
     }
 }

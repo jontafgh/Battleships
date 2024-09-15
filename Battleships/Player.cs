@@ -339,36 +339,44 @@ namespace Battleships
         }
         public void GetShot()
         {
-            SpacebarPressed = false;
-            ConsoleKeyInfo consoleKey = Console.ReadKey(true);
-            switch (consoleKey.Key)
-            {
-                case ConsoleKey.UpArrow:
-                    YPosition--;
-                    Console.SetCursorPosition(XPosition, YPosition);
+                ConsoleKeyInfo consoleKey = Console.ReadKey(true);
+                switch (consoleKey.Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        YPosition--;
+                        Console.SetCursorPosition(XPosition, YPosition);
+                    ShotCounter = 0;
                     break;
-                case ConsoleKey.DownArrow:
-                    YPosition++;
-                    Console.SetCursorPosition(XPosition, YPosition);
+                    case ConsoleKey.DownArrow:
+                        YPosition++;
+                        Console.SetCursorPosition(XPosition, YPosition);
+                    ShotCounter = 0;
                     break;
-                case ConsoleKey.LeftArrow:
-                    XPosition--;
-                    Console.SetCursorPosition(XPosition, YPosition);
+                    case ConsoleKey.LeftArrow:
+                        XPosition--;
+                        Console.SetCursorPosition(XPosition, YPosition);
+                    ShotCounter = 0;
                     break;
-                case ConsoleKey.RightArrow:
-                    XPosition++;
-                    Console.SetCursorPosition(XPosition, YPosition);
+                    case ConsoleKey.RightArrow:
+                        XPosition++;
+                        Console.SetCursorPosition(XPosition, YPosition);
+                    ShotCounter = 0;
                     break;
-                case ConsoleKey.Spacebar:
-                    SpacebarPressed = true;
-                    break;
-
-            }
+                    case ConsoleKey.Spacebar:
+                        ShotCounter = 1;
+                        break;
+                } 
         }
         public bool GetValidShot(int[,] shipMap, int MapPositionX)
         {
+            if (ShotCounter == 0)
+            {
+                return false;
+            }
+
             if ((XPosition - MapPositionX - 1) > (shipMap.GetLength(0) - 1) || (XPosition - MapPositionX - 1) < 0 || YPosition - 1 > (shipMap.GetLength(0) - 1) || YPosition - 1 < 0)
             {
+                ShotCounter = 0;
                 return false;
             }
 
@@ -382,12 +390,14 @@ namespace Battleships
                         {
                             if (shipMap[i, j] == (int)UserInterface.ShipMapGraphics.MissMarker || shipMap[i, j] == (int)UserInterface.ShipMapGraphics.HitCarrier || shipMap[i, j] == (int)UserInterface.ShipMapGraphics.HitBattleship || shipMap[i, j] == (int)UserInterface.ShipMapGraphics.HitSubmarine || shipMap[i, j] == (int)UserInterface.ShipMapGraphics.HitDestroyer)
                             {
+                                ShotCounter = 0;
                                 return false;
                             }
                         }
                     }
                 }
             }
+            ShotCounter = 0;
             return true;
         }
         public int[,] Shoot(int[,] shipMap, int[,] concealedShipMap, int MapPositionX)
